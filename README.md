@@ -2,7 +2,7 @@
 
 Para desenvolver as atividades da disciplina de Computação Gráfica favor utilizar as respectivas pastas para postar os trabalhos de cada unidade.  
 
-Alunos:  
+Alunos: Alexandre Zeni - Bruno Gabriel de Sousa - Joshua Patrick Loesch Alves - Leonardo Oliani Fernandes - Lorhan Felipe Melo  
 
 ## [Atividades da Unidade 1](Unidade1/ "Atividades da Unidade 1")
 
