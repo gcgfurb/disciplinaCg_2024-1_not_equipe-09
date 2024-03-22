@@ -1,21 +1,20 @@
 # Atividades 1
 
-Nota: 
+Nota: 10,0  
+[x] Alexandre Zeni  
+[x] Bruno Gabriel de Sousa  
+[x] Joshua Patrick Loesch Alves  
+[x] Leonardo Oliani Fernandes  
+[x] Lorhan Felipe Melo  
 
-Alexandre Zeni  
-Bruno Gabriel de Sousa  
-Joshua Patrick Loesch Alves  
-Leonardo Oliani Fernandes  
-Lorhan Felipe Melo  
-
-- Óculos Estereoscópico (Head Mounted Display)
-- Giroscópio
-- Câmeras 3D
+- Óculos Estereoscópico (Head Mounted Display)  
+- Giroscópio  
+- Câmeras 3D  
 
 Encontro da cadeira é um azul só?  
 HMD 1969  
-Temos uma disiciplina com um professor muito bom.  
-O que preciso para gerar uma imagem stero.  
+Temos uma disciplina com um professor muito bom.  
+O que preciso para gerar uma imagem stereo.  
 Paralaxe  
 6 DOF 3 translação 3 rotação (matriz)  
 
@@ -24,7 +23,6 @@ Usado como sensor principalmente RV
 Pegar a minha posição no mundo é um pouco mais complicado ...  
 Azimute  
 
-Câmera 3D
+Câmera 3D  
 
 [Slides.pdf](Slides.pdf)  
-
