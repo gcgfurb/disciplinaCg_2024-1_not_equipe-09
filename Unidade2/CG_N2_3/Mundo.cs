@@ -68,6 +68,7 @@ namespace gcgcg
 
             #region Objeto: SrPalito
             objetoSelecionado = new SrPalito(mundo, ref rotuloAtual);
+            objetoSelecionado.shaderObjeto = new Shader("Shaders/shader.vert", "Shaders/shaderCiano.frag");
             #endregion
 
 #if CG_Privado
@@ -79,10 +80,6 @@ namespace gcgcg
              objetoSelecionado = new Circulo(mundo, ref rotuloAtual, 0.1, new Ponto4D(0.0,-0.5));
              objetoSelecionado.shaderObjeto = new Shader("Shaders/shader.vert", "Shaders/shaderAmarela.frag");
              #endregion
-
-            /*
-             objetoSelecionado = new SrPalito(mundo, ref rotuloAtual);
-            */
 
              #region Objeto: Spline
              objetoSelecionado = new Spline(mundo, ref rotuloAtual);
@@ -135,21 +132,24 @@ namespace gcgcg
                 if (input.IsKeyPressed(Keys.A))
                 {
                     srPalitoRadius -= 0.1;
-                    objetoSelecionado.PontosAlterar(
-                        new Ponto4D(
-                            objetoSelecionado.PontosId(1).X - (srPalitoRadius * Math.Cos(Math.PI * srPalitoAngle / 180.0)),
-                            (srPalitoRadius * Math.Sin(Math.PI * srPalitoAngle / 180.0)),
-                            0
-                        ),
-                        1
-                    );
+                    objetoSelecionado.PontosAlterar(CG_Biblioteca.Matematica.GerarPtosCirculo(srPalitoAngle, srPalitoRadius), 1);
                     objetoSelecionado.ObjetoAtualizar();
                 }
 
                 if (input.IsKeyPressed(Keys.S))
                 {
                     srPalitoRadius += 0.1;
-                    objetoSelecionado.PontosAlterar(CG_Biblioteca.Matematica.GerarPtosCirculo(srPalitoAngle, srPalitoRadius), 1);
+                    Ponto4D finalPointPositionTemporary = objetoSelecionado.PontosId(1);
+                    Ponto4D generatedPoint = CG_Biblioteca.Matematica.GerarPtosCirculo(srPalitoAngle, srPalitoRadius);
+
+                    if (objetoSelecionado.PontosId(0).X == 0 && objetoSelecionado.PontosId(0).Y == 0)
+                    {
+                        objetoSelecionado.PontosAlterar(generatedPoint, 1);
+                    }
+                    else
+                    {
+                        objetoSelecionado.PontosAlterar(new Ponto4D(generatedPoint.X, generatedPoint.Y + finalPointPositionTemporary.Y, 0), 1);
+                    }
                     objetoSelecionado.ObjetoAtualizar();
                 }
 
@@ -178,7 +178,6 @@ namespace gcgcg
                     if (input.IsKeyPressed(Keys.P))
                     {
                         Console.WriteLine(objetoSelecionado);
-                        System.Diagnostics.Debug.WriteLine(objetoSelecionado);
                     }
                     else
                     {
