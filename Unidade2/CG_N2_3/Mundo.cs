@@ -40,6 +40,7 @@ namespace gcgcg
         private Ponto4D mouseMovtoUltimo;
         private int srPalitoAngle = 45;
         private double srPalitoRadius = 0.5;
+        private double temporaryWalkingValues = 0.0;
 
         public Mundo(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
                : base(gameWindowSettings, nativeWindowSettings)
@@ -118,6 +119,7 @@ namespace gcgcg
                 {
                     objetoSelecionado.PontosAlterar(new Ponto4D(objetoSelecionado.PontosId(0).X - 0.05, objetoSelecionado.PontosId(0).Y, 0), 0);
                     objetoSelecionado.PontosAlterar(new Ponto4D(objetoSelecionado.PontosId(1).X - 0.05, objetoSelecionado.PontosId(1).Y, 0), 1);
+                    temporaryWalkingValues -= 0.05;
                     objetoSelecionado.ObjetoAtualizar();
                 }
 
@@ -125,6 +127,7 @@ namespace gcgcg
                 {
                     objetoSelecionado.PontosAlterar(new Ponto4D(objetoSelecionado.PontosId(0).X + 0.05, objetoSelecionado.PontosId(0).Y, 0), 0);
                     objetoSelecionado.PontosAlterar(new Ponto4D(objetoSelecionado.PontosId(1).X + 0.05, objetoSelecionado.PontosId(1).Y, 1), 1);
+                    temporaryWalkingValues += 0.05;
                     objetoSelecionado.ObjetoAtualizar();
                 }
 
@@ -132,24 +135,20 @@ namespace gcgcg
                 if (input.IsKeyPressed(Keys.A))
                 {
                     srPalitoRadius -= 0.1;
-                    objetoSelecionado.PontosAlterar(CG_Biblioteca.Matematica.GerarPtosCirculo(srPalitoAngle, srPalitoRadius), 1);
+                    Ponto4D generatedPoint = CG_Biblioteca.Matematica.GerarPtosCirculo(srPalitoAngle, srPalitoRadius);
+                    generatedPoint.X += temporaryWalkingValues;
+
+                    objetoSelecionado.PontosAlterar(generatedPoint, 1);
                     objetoSelecionado.ObjetoAtualizar();
                 }
 
                 if (input.IsKeyPressed(Keys.S))
                 {
                     srPalitoRadius += 0.1;
-                    Ponto4D finalPointPositionTemporary = objetoSelecionado.PontosId(1);
                     Ponto4D generatedPoint = CG_Biblioteca.Matematica.GerarPtosCirculo(srPalitoAngle, srPalitoRadius);
+                    generatedPoint.X += temporaryWalkingValues;
 
-                    if (objetoSelecionado.PontosId(0).X == 0 && objetoSelecionado.PontosId(0).Y == 0)
-                    {
-                        objetoSelecionado.PontosAlterar(generatedPoint, 1);
-                    }
-                    else
-                    {
-                        objetoSelecionado.PontosAlterar(new Ponto4D(generatedPoint.X, generatedPoint.Y + finalPointPositionTemporary.Y, 0), 1);
-                    }
+                    objetoSelecionado.PontosAlterar(generatedPoint, 1);
                     objetoSelecionado.ObjetoAtualizar();
                 }
 
@@ -157,14 +156,20 @@ namespace gcgcg
                 if (input.IsKeyPressed(Keys.Z))
                 {
                     srPalitoAngle -= 10;
-                    objetoSelecionado.PontosAlterar(CG_Biblioteca.Matematica.GerarPtosCirculo(srPalitoAngle, srPalitoRadius), 1);
+                    Ponto4D generatedPoint = CG_Biblioteca.Matematica.GerarPtosCirculo(srPalitoAngle, srPalitoRadius);
+                    generatedPoint.X += temporaryWalkingValues;
+
+                    objetoSelecionado.PontosAlterar(generatedPoint, 1);
                     objetoSelecionado.ObjetoAtualizar();
                 }
 
                 if (input.IsKeyPressed(Keys.X))
                 {
                     srPalitoAngle += 10;
-                    objetoSelecionado.PontosAlterar(CG_Biblioteca.Matematica.GerarPtosCirculo(srPalitoAngle, srPalitoRadius), 1);
+                    Ponto4D generatedPoint = CG_Biblioteca.Matematica.GerarPtosCirculo(srPalitoAngle, srPalitoRadius);
+                    generatedPoint.X += temporaryWalkingValues;
+
+                    objetoSelecionado.PontosAlterar(generatedPoint, 1);
                     objetoSelecionado.ObjetoAtualizar();
                 }
 
