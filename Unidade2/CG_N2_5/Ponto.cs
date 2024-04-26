@@ -14,7 +14,7 @@ namespace gcgcg
     public Ponto(Objeto _paiRef, ref char _rotulo, Ponto4D pto) : base(_paiRef, ref _rotulo)
     {
       PrimitivaTipo = PrimitiveType.Points;
-      PrimitivaTamanho = 20;
+      PrimitivaTamanho = 10;
 
       base.PontosAdicionar(pto);
 
@@ -23,7 +23,6 @@ namespace gcgcg
 
     public void Atualizar()
     {
-
       base.ObjetoAtualizar();
     }
 

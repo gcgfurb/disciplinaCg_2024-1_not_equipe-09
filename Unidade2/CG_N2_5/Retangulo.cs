@@ -13,8 +13,8 @@ namespace gcgcg
 
     public Retangulo(Objeto _paiRef, ref char _rotulo, Ponto4D ptoInfEsq, Ponto4D ptoSupDir) : base(_paiRef, ref _rotulo)
     {
-      PrimitivaTipo = PrimitiveType.Points;
-      PrimitivaTamanho = 10;
+      PrimitivaTipo = PrimitiveType.LineLoop;
+      PrimitivaTamanho = 5;
 
       // Sentido horário
       base.PontosAdicionar(ptoInfEsq);

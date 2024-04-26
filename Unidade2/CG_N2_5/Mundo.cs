@@ -37,7 +37,11 @@ namespace gcgcg
 
         private bool mouseMovtoPrimeiro = true;
         private Ponto4D mouseMovtoUltimo;
-        //private Vector2 _lastPos;
+        private Circulo smallerCircle = null;
+        private Retangulo innerRectangle = null;
+        private Ponto innerPoint = null;
+        private double transformX = 0.0;
+        private double transformY = 0.0;
 
         public Mundo(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
                : base(gameWindowSettings, nativeWindowSettings)
@@ -64,16 +68,21 @@ namespace gcgcg
             _shaderAzul = new Shader("Shaders/shader.vert", "Shaders/shaderAzul.frag");
             #endregion
 
-            #region Object: Bigger GenerationCirclePointsCounter
-            Circulo biggerCircle = new Circulo(mundo, ref rotuloAtual, 0.25);
+            #region Object: Bigger Circle
+            Circulo biggerCircle = new Circulo(mundo, ref rotuloAtual, 0.28);
             #endregion
 
-            /*
-            #region Objeto: retângulo  
-            objetoSelecionado = new Retangulo(mundo, ref rotuloAtual, new Ponto4D(-0.25, 0.25), new Ponto4D(-0.75, 0.75));
-            objetoSelecionado.PrimitivaTipo = PrimitiveType.LineLoop;
+            #region Object: Smaller Circle
+            smallerCircle = new Circulo(mundo, ref rotuloAtual, 0.10);
             #endregion
-            */
+
+            #region Object: Inner Square
+            innerRectangle = new Retangulo(mundo, ref rotuloAtual, new Ponto4D(-0.20, 0.19), new Ponto4D(0.20, -0.19));
+            #endregion
+
+            #region Object: Inner Point
+            innerPoint = new Ponto(mundo, ref rotuloAtual, new Ponto4D(0.0, 0.0));
+            #endregion
 
 #if CG_Privado
              #region Objeto: circulo - origem
@@ -121,6 +130,24 @@ namespace gcgcg
             }
             else
             {
+                // Walk Up
+                if (input.IsKeyPressed(Keys.C))
+                {
+                    transformY += 0.005;
+                    innerPoint.PontosAlterar(new Ponto4D(innerPoint.PontosId(0).X, innerPoint.PontosId(0).Y + transformY), 0);
+
+                    smallerCircle.UpdateObject(transformX, transformY, 0.10, 1.0);
+                    smallerCircle.ObjetoAtualizar();
+                }
+
+                // Walk Down
+                /*if (input.IsKeyPressed(Keys.B))
+                {
+                    objetoSelecionado.PontosAlterar(new Ponto4D(objetoSelecionado.PontosId(0).X, objetoSelecionado.PontosId(0).Y - 0.005), 0);
+                    //smallerCircle = new Circulo(mundo, ref rotuloAtual, 0.10, isX, isSum, true);
+                    objetoSelecionado.ObjetoAtualizar();
+                }*/
+
                 if (input.IsKeyPressed(Keys.Right))
                 {
                     objetoSelecionado.PontosAlterar(new Ponto4D(objetoSelecionado.PontosId(0).X + 0.005, objetoSelecionado.PontosId(0).Y, 0), 0);
