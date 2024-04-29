@@ -52,6 +52,7 @@ namespace gcgcg
         private List<Ponto> point_list = new List<Ponto>();
         private List<Ponto4D> point_list_4D = new List<Ponto4D>();
         private Poligono controlPolyhedron;
+        private bool splinePointsChanged;
 
         private Spline spline;
         #endregion
@@ -190,15 +191,23 @@ namespace gcgcg
             {   
                 UpdateFigures(index_points_list, controlPolyhedron, point_list_4D, point_list, -0.05 , 0.0);
             }
-            else if (input.IsKeyPressed(Keys.Semicolon))
+            else if (input.IsKeyPressed(Keys.A))
             {   
-                spline.SplinePoints(0.1, false);
-                spline.drawSpline(point_list_4D);
+                splinePointsChanged = spline.SplinePoints(0.001, false);
+
+                if(splinePointsChanged){
+                    spline.drawSpline(point_list_4D);
+                    //Console.WriteLine(spline.qtdPontosSpline);
+                }
+
             }
-            else if (input.IsKeyPressed(Keys.Comma))
+            else if (input.IsKeyPressed(Keys.Z))
             {   
-                spline.SplinePoints(0.1, true);
-                spline.drawSpline(point_list_4D);
+                splinePointsChanged = spline.SplinePoints(0.001, true);
+                
+                if(splinePointsChanged){
+                    spline.drawSpline(point_list_4D);
+                }
             }
             #endregion
 
