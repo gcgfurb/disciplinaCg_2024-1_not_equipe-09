@@ -30,6 +30,18 @@ namespace gcgcg
       base.ObjetoAtualizar();
     }
 
+    public void SetPrimitivaTipo(bool isLineLoop)
+    {
+      if (isLineLoop)
+      {
+        PrimitivaTipo = PrimitiveType.LineLoop;
+      }
+      else
+      {
+        PrimitivaTipo = PrimitiveType.Points;
+      }
+    }
+
 #if CG_Debug
     public override string ToString()
     {

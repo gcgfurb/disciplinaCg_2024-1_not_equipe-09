@@ -37,6 +37,7 @@ namespace gcgcg
 
         private bool mouseMovtoPrimeiro = true;
         private Ponto4D mouseMovtoUltimo;
+        private BBox bbox = null;
         private Circulo smallerCircle = null;
         private Retangulo innerRectangle = null;
         private Ponto innerPoint = null;
@@ -78,6 +79,10 @@ namespace gcgcg
 
             #region Object: Inner Square
             innerRectangle = new Retangulo(mundo, ref rotuloAtual, new Ponto4D(-0.20, 0.19), new Ponto4D(0.20, -0.19));
+            #endregion
+
+            #region Object: BBox
+            bbox = new BBox();
             #endregion
 
             #region Object: Inner Point
@@ -133,18 +138,48 @@ namespace gcgcg
                 // Walk Up
                 if (input.IsKeyPressed(Keys.C))
                 {
-                    transformY += 0.005;
+                    transformY += 0.001;
                     innerPoint.PontosAlterar(new Ponto4D(innerPoint.PontosId(0).X, innerPoint.PontosId(0).Y + transformY), 0);
-                    smallerCircle.UpdateObject(smallerCircle, transformX, transformY, 0.10, 1.0);
+                    smallerCircle.UpdateObject(smallerCircle, innerPoint.PontosId(0), 0.10, 1.0);
                 }
 
                 // Walk Down
-                /*if (input.IsKeyPressed(Keys.B))
+                if (input.IsKeyPressed(Keys.B))
                 {
-                    objetoSelecionado.PontosAlterar(new Ponto4D(objetoSelecionado.PontosId(0).X, objetoSelecionado.PontosId(0).Y - 0.005), 0);
-                    //smallerCircle = new Circulo(mundo, ref rotuloAtual, 0.10, isX, isSum, true);
-                    objetoSelecionado.ObjetoAtualizar();
-                }*/
+                    transformY += 0.001;
+                    innerPoint.PontosAlterar(new Ponto4D(innerPoint.PontosId(0).X, innerPoint.PontosId(0).Y - transformY), 0);
+                    smallerCircle.UpdateObject(smallerCircle, innerPoint.PontosId(0), 0.10, 1.0);
+                }
+
+                // Walk Right
+                if (input.IsKeyPressed(Keys.D))
+                {
+                    transformX += 0.001;
+                    innerPoint.PontosAlterar(new Ponto4D(innerPoint.PontosId(0).X + transformX, innerPoint.PontosId(0).Y), 0);
+                    smallerCircle.UpdateObject(smallerCircle, innerPoint.PontosId(0), 0.10, 1.0);
+                }
+
+                // Walk Left
+                if (input.IsKeyPressed(Keys.E))
+                {
+                    transformX += 0.001;
+                    innerPoint.PontosAlterar(new Ponto4D(innerPoint.PontosId(0).X - transformX, innerPoint.PontosId(0).Y), 0);
+                    smallerCircle.UpdateObject(smallerCircle, innerPoint.PontosId(0), 0.10, 1.0);
+                }
+
+                List<Ponto4D> pointsList = new List<Ponto4D>() { innerRectangle.PontosId(0) };
+
+                //bbox.Atualizar(null, pointsList);
+                bbox.ProcessarCentro();
+
+                if (bbox.Dentro(innerPoint.PontosId(0)))
+                {
+                    innerRectangle.SetPrimitivaTipo(true);
+                }
+                else
+                {
+                    innerRectangle.SetPrimitivaTipo(false);
+                }
 
                 if (input.IsKeyPressed(Keys.Right))
                 {

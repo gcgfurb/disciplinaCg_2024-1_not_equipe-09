@@ -14,10 +14,10 @@ namespace gcgcg
             PrimitivaTipo = PrimitiveType.Lines;
             PrimitivaTamanho = 5;
 
-            UpdateObject(null, 0.0, 0.0, radius, increasingDrawingAngle);
+            UpdateObject(null, null, radius, increasingDrawingAngle);
         }
 
-        public void UpdateObject(Circulo circulo, double transformX, double transformY, double radius, double increasingDrawingAngle)
+        public void UpdateObject(Circulo circulo, Ponto4D innerPoint, double radius, double increasingDrawingAngle)
         {
             for (int i = 0; i <= GenerationCirclePointsCounter; i++)
             {
@@ -29,10 +29,7 @@ namespace gcgcg
                 }
                 else
                 {
-                    if (i != 390)
-                    {
-                        circulo.PontosAlterar(new Ponto4D(circlePoint.X + transformX, circlePoint.Y + transformY), i);
-                    }
+                    circulo.PontosAlterar(new Ponto4D(circlePoint.X + innerPoint.X, circlePoint.Y + innerPoint.Y), i);
                 }
                 increasingDrawingAngle += 1.0;
             }
