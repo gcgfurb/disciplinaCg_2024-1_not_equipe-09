@@ -14,23 +14,25 @@ namespace gcgcg
             PrimitivaTipo = PrimitiveType.Lines;
             PrimitivaTamanho = 5;
 
-            UpdateObject(0.0, 0.0, radius, increasingDrawingAngle);
-            base.ObjetoAtualizar();
+            UpdateObject(null, 0.0, 0.0, radius, increasingDrawingAngle);
         }
 
-        public void UpdateObject(double transformX, double transformY, double radius, double increasingDrawingAngle)
+        public void UpdateObject(Circulo circulo, double transformX, double transformY, double radius, double increasingDrawingAngle)
         {
             for (int i = 0; i <= GenerationCirclePointsCounter; i++)
             {
                 Ponto4D circlePoint = Matematica.GerarPtosCirculo(increasingDrawingAngle, radius);
 
-                if (transformX == 0.0 && transformY == 0.0)
+                if (circulo == null)
                 {
                     base.PontosAdicionar(new Ponto4D(circlePoint.X, circlePoint.Y));
                 }
                 else
                 {
-                    base.PontosAlterar(new Ponto4D(circlePoint.X, circlePoint.Y + transformY), i);       
+                    if (i != 390)
+                    {
+                        circulo.PontosAlterar(new Ponto4D(circlePoint.X + transformX, circlePoint.Y + transformY), i);
+                    }
                 }
                 increasingDrawingAngle += 1.0;
             }

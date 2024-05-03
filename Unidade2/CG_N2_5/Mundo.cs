@@ -135,9 +135,7 @@ namespace gcgcg
                 {
                     transformY += 0.005;
                     innerPoint.PontosAlterar(new Ponto4D(innerPoint.PontosId(0).X, innerPoint.PontosId(0).Y + transformY), 0);
-
-                    smallerCircle.UpdateObject(transformX, transformY, 0.10, 1.0);
-                    smallerCircle.ObjetoAtualizar();
+                    smallerCircle.UpdateObject(smallerCircle, transformX, transformY, 0.10, 1.0);
                 }
 
                 // Walk Down
@@ -165,13 +163,6 @@ namespace gcgcg
                         {
                             if (objetoSelecionado == null)
                                 objetoSelecionado = mundo;
-                        }
-                        else
-                        {
-                            if (input.IsKeyPressed(Keys.C))
-                            {
-                                objetoSelecionado.shaderObjeto = new Shader("Shaders/shader.vert", "Shaders/shaderCiano.frag");
-                            }
                         }
                     }
                 }
