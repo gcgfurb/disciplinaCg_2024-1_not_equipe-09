@@ -2,6 +2,7 @@
 
 using CG_Biblioteca;
 using OpenTK.Graphics.OpenGL4;
+using System.Collections.Generic;
 
 namespace gcgcg
 {
@@ -28,6 +29,10 @@ namespace gcgcg
     {
 
       base.ObjetoAtualizar();
+    }
+
+    public List<Ponto4D> getPointList(){
+      return base.pontosLista;
     }
 
     public void SetPrimitivaTipo(bool isLineLoop)

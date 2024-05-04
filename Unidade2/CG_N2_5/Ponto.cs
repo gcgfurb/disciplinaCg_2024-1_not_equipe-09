@@ -7,7 +7,8 @@ namespace gcgcg
 {
   internal class Ponto : Objeto
   {
-    public Ponto(Objeto _paiRef, ref char _rotulo) : this(_paiRef,ref _rotulo,new Ponto4D()) {
+    public Ponto(Objeto _paiRef, ref char _rotulo) : this(_paiRef, ref _rotulo, new Ponto4D())
+    {
 
     }
 
@@ -24,6 +25,19 @@ namespace gcgcg
     public void Atualizar()
     {
       base.ObjetoAtualizar();
+    }
+
+    public void isOffLimits(BBox boundingBox, Retangulo innerRectangle)
+    {
+
+      if (boundingBox.Dentro(this.PontosId(0)))
+      {
+          innerRectangle.SetPrimitivaTipo(true);
+      }
+      else
+      {
+          innerRectangle.SetPrimitivaTipo(false);
+      }
     }
 
 #if CG_Debug

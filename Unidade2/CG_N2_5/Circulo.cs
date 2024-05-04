@@ -11,7 +11,7 @@ namespace gcgcg
         public Circulo(Objeto _paiRef, ref char _rotulo, double radius) : base(_paiRef, ref _rotulo)
         {
             double increasingDrawingAngle = 1.0;
-            PrimitivaTipo = PrimitiveType.Lines;
+            PrimitivaTipo = PrimitiveType.LineStrip;
             PrimitivaTamanho = 5;
 
             UpdateObject(null, null, radius, increasingDrawingAngle);
