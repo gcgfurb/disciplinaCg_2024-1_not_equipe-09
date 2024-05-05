@@ -1,4 +1,5 @@
 using CG_Biblioteca;
+using System.Collections.Generic;
 using OpenTK.Graphics.OpenGL4;
 
 namespace gcgcg
@@ -33,6 +34,11 @@ namespace gcgcg
                 }
                 increasingDrawingAngle += 1.0;
             }
+        }
+
+        public List<Ponto4D> getPointList()
+        {
+            return base.pontosLista;
         }
     }
 }

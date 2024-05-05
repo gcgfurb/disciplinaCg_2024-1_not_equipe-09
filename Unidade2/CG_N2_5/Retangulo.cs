@@ -31,7 +31,8 @@ namespace gcgcg
       base.ObjetoAtualizar();
     }
 
-    public List<Ponto4D> getPointList(){
+    public List<Ponto4D> getPointList()
+    {
       return base.pontosLista;
     }
 

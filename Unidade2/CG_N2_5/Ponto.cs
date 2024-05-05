@@ -1,6 +1,7 @@
 #define CG_Debug
 
 using CG_Biblioteca;
+using System;
 using OpenTK.Graphics.OpenGL4;
 
 namespace gcgcg
@@ -27,10 +28,28 @@ namespace gcgcg
       base.ObjetoAtualizar();
     }
 
-    public void isOffLimits(BBox boundingBox, Retangulo innerRectangle)
+    public bool isOffLimitsBiggerCircleBBox(BBox biggerCircleBBox, Ponto4D midCirclePoint, Ponto4D newInnerPoint, double radius)
+    {
+      if (biggerCircleBBox.Dentro(newInnerPoint) && !isOffLimitsEuclideanDistance(midCirclePoint, newInnerPoint, radius))
+      {
+        return false;
+      } else {
+        return true;
+      }
+    }
+
+    protected bool isOffLimitsEuclideanDistance(Ponto4D midCirclePoint, Ponto4D newInnerPoint, double radius)
+    {
+      double euclideanDistance = CG_Biblioteca.Matematica.distanciaQuadrado(midCirclePoint, newInnerPoint);
+      double radiusPowerTwo = Math.Pow(radius, 2);
+
+      return euclideanDistance > radiusPowerTwo;
+    }
+
+    public void isOffLimits(BBox innerRectangleBBox, Retangulo innerRectangle)
     {
 
-      if (boundingBox.Dentro(this.PontosId(0)))
+      if (innerRectangleBBox.Dentro(this.PontosId(0)))
       {
           innerRectangle.SetPrimitivaTipo(true);
       }

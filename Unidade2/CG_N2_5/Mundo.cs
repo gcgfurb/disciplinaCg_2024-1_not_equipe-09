@@ -17,6 +17,8 @@ namespace gcgcg
 {
     public class Mundo : GameWindow
     {
+        private const double BiggerCircleRadius = 0.28;
+        private const double SmallerCircleRadius = 0.10;
         private static Objeto mundo = null;
         private char rotuloAtual = '?';
         private Objeto objetoSelecionado = null;
@@ -37,9 +39,10 @@ namespace gcgcg
 
         private bool mouseMovtoPrimeiro = true;
         private Ponto4D mouseMovtoUltimo;
-        private BBox bbox = null;
-
-        private Transformacao4D transform_4d = null;
+        private BBox biggerCircleBBox = null;
+        private BBox innerRectangleBBox = null;
+        private Transformacao4D biggerCircleTransform4d = null;
+        private Transformacao4D innerRectangleTransform4d = null;
         private Circulo smallerCircle = null;
         private Retangulo innerRectangle = null;
         private Ponto innerPoint = null;
@@ -72,21 +75,27 @@ namespace gcgcg
             #endregion
 
             #region Object: Bigger Circle
-            Circulo biggerCircle = new Circulo(mundo, ref rotuloAtual, 0.28);
+            Circulo biggerCircle = new Circulo(mundo, ref rotuloAtual, BiggerCircleRadius);
             #endregion
 
             #region Object: Smaller Circle
-            smallerCircle = new Circulo(mundo, ref rotuloAtual, 0.10);
+            smallerCircle = new Circulo(mundo, ref rotuloAtual, SmallerCircleRadius);
             #endregion
 
             #region Object: Inner Square
             innerRectangle = new Retangulo(mundo, ref rotuloAtual, new Ponto4D(-0.20, 0.19), new Ponto4D(0.20, -0.19));
             #endregion
 
-            #region Object: BBox
-            bbox = new BBox();
-            transform_4d = new Transformacao4D();
-            bbox.Atualizar(transform_4d, innerRectangle.getPointList());
+            #region Object: Bigger Circle BBox
+            biggerCircleBBox = new BBox();
+            biggerCircleTransform4d = new Transformacao4D();
+            biggerCircleBBox.Atualizar(biggerCircleTransform4d, biggerCircle.getPointList());
+            #endregion
+
+            #region Object: Rectangle BBox
+            innerRectangleBBox = new BBox();
+            innerRectangleTransform4d = new Transformacao4D();
+            innerRectangleBBox.Atualizar(innerRectangleTransform4d, innerRectangle.getPointList());
             #endregion
 
             #region Object: Inner Point
@@ -139,40 +148,63 @@ namespace gcgcg
             }
             else
             {
+                Ponto4D midCirclePoint = new Ponto4D(0.0, 0.0, 0.0);
+                Ponto4D newGenericInnerPoint = null;
+
                 // Walk Up
                 if (input.IsKeyPressed(Keys.C))
                 {
                     transformY = 0.01;
-                    innerPoint.PontosAlterar(new Ponto4D(innerPoint.PontosId(0).X, innerPoint.PontosId(0).Y + transformY), 0);
-                    smallerCircle.UpdateObject(smallerCircle, innerPoint.PontosId(0), 0.10, 1.0);
-                    innerPoint.isOffLimits(bbox, innerRectangle);
+                    newGenericInnerPoint = new Ponto4D(innerPoint.PontosId(0).X, innerPoint.PontosId(0).Y + transformY);
+
+                    if (!innerPoint.isOffLimitsBiggerCircleBBox(biggerCircleBBox, midCirclePoint, newGenericInnerPoint, BiggerCircleRadius))
+                    {
+                        innerPoint.PontosAlterar(newGenericInnerPoint, 0);
+                        smallerCircle.UpdateObject(smallerCircle, innerPoint.PontosId(0), SmallerCircleRadius, 1.0);
+                        innerPoint.isOffLimits(innerRectangleBBox, innerRectangle);
+                    }
                 }
 
                 // Walk Down
                 if (input.IsKeyPressed(Keys.B))
                 {
                     transformY = -0.01;
-                    innerPoint.PontosAlterar(new Ponto4D(innerPoint.PontosId(0).X, innerPoint.PontosId(0).Y + transformY), 0);
-                    smallerCircle.UpdateObject(smallerCircle, innerPoint.PontosId(0), 0.10, 1.0);
-                    innerPoint.isOffLimits(bbox, innerRectangle);
+                    newGenericInnerPoint = new Ponto4D(innerPoint.PontosId(0).X, innerPoint.PontosId(0).Y + transformY);
+
+                    if (!innerPoint.isOffLimitsBiggerCircleBBox(biggerCircleBBox, midCirclePoint, newGenericInnerPoint, BiggerCircleRadius))
+                    {
+                        innerPoint.PontosAlterar(newGenericInnerPoint, 0);
+                        smallerCircle.UpdateObject(smallerCircle, innerPoint.PontosId(0), SmallerCircleRadius, 1.0);
+                        innerPoint.isOffLimits(innerRectangleBBox, innerRectangle);
+                    }
                 }
 
                 // Walk Right
                 if (input.IsKeyPressed(Keys.D))
                 {
                     transformX = 0.01;
-                    innerPoint.PontosAlterar(new Ponto4D(innerPoint.PontosId(0).X + transformX, innerPoint.PontosId(0).Y), 0);
-                    smallerCircle.UpdateObject(smallerCircle, innerPoint.PontosId(0), 0.10, 1.0);
-                    innerPoint.isOffLimits(bbox, innerRectangle);
+                    newGenericInnerPoint = new Ponto4D(innerPoint.PontosId(0).X + transformX, innerPoint.PontosId(0).Y);
+                    
+                    if (!innerPoint.isOffLimitsBiggerCircleBBox(biggerCircleBBox, midCirclePoint, newGenericInnerPoint, BiggerCircleRadius))
+                    {
+                        innerPoint.PontosAlterar(newGenericInnerPoint, 0);
+                        smallerCircle.UpdateObject(smallerCircle, innerPoint.PontosId(0), SmallerCircleRadius, 1.0);
+                        innerPoint.isOffLimits(innerRectangleBBox, innerRectangle);
+                    }
                 }
 
                 // Walk Left
                 if (input.IsKeyPressed(Keys.E))
                 {
                     transformX = -0.01;
-                    innerPoint.PontosAlterar(new Ponto4D(innerPoint.PontosId(0).X + transformX, innerPoint.PontosId(0).Y), 0);
-                    smallerCircle.UpdateObject(smallerCircle, innerPoint.PontosId(0), 0.10, 1.0);
-                    innerPoint.isOffLimits(bbox, innerRectangle);
+                    newGenericInnerPoint = new Ponto4D(innerPoint.PontosId(0).X + transformX, innerPoint.PontosId(0).Y);
+
+                    if (!innerPoint.isOffLimitsBiggerCircleBBox(biggerCircleBBox, midCirclePoint, newGenericInnerPoint, BiggerCircleRadius))
+                    {
+                        innerPoint.PontosAlterar(newGenericInnerPoint, 0);
+                        smallerCircle.UpdateObject(smallerCircle, innerPoint.PontosId(0), SmallerCircleRadius, 1.0);
+                        innerPoint.isOffLimits(innerRectangleBBox, innerRectangle);
+                    }
                 }
 
                 if (input.IsKeyPressed(Keys.Right))
