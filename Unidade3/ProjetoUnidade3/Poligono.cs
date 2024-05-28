@@ -12,13 +12,13 @@ namespace gcgcg
     {
       PrimitivaTipo = PrimitiveType.LineLoop;
       PrimitivaTamanho = 1;
-      base.pontosLista = pontosPoligono;
-      Atualizar();
+      //base.pontosLista = pontosPoligono;
+      Atualizar(pontosPoligono);
     }
 
-    private void Atualizar()
+    public void Atualizar(List<Ponto4D> pontosPoligono)
     {
-
+      base.pontosLista = pontosPoligono;
       base.ObjetoAtualizar();
     }
 

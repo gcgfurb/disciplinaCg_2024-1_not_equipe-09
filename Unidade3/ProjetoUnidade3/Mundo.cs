@@ -43,6 +43,9 @@ namespace gcgcg
     private Shader _shaderCiano;
     private Shader _shaderMagenta;
     private Shader _shaderAmarela;
+    private bool isEnterPressedBefore = true;
+    private List<Ponto4D> poligonPointsCache = new List<Ponto4D>();
+    private Poligono temporaryPoligon = null;
 
     public Mundo(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
       : base(gameWindowSettings, nativeWindowSettings)
@@ -81,22 +84,22 @@ namespace gcgcg
       GL.EnableVertexAttribArray(0);
       #endregion
 
-      #region Objeto: polígono qualquer  
-      List<Ponto4D> pontosPoligonoBandeira = new List<Ponto4D>();
-      pontosPoligonoBandeira.Add(new Ponto4D(0.25, 0.25));  // A = (0.25, 0.25)
-      pontosPoligonoBandeira.Add(new Ponto4D(0.75, 0.25));  // B = (0.75, 0.25)
-      pontosPoligonoBandeira.Add(new Ponto4D(0.75, 0.75));  // C = (0.75, 0.75)
-      pontosPoligonoBandeira.Add(new Ponto4D(0.50, 0.50));  // D = (0.50, 0.50)
-      pontosPoligonoBandeira.Add(new Ponto4D(0.25, 0.75));  // E = (0.25, 0.75)
-      objetoSelecionado = new Poligono(mundo, ref rotuloAtual, pontosPoligonoBandeira);
-      #endregion
-      #region declara um objeto filho ao polígono
-      List<Ponto4D> pontosPoligonoTriangulo = new List<Ponto4D>();
-      pontosPoligonoTriangulo.Add(new Ponto4D(0.50, 0.50)); // F = (0.50, 0.50)
-      pontosPoligonoTriangulo.Add(new Ponto4D(0.75, 0.75)); // G = (0.75, 0.75)
-      pontosPoligonoTriangulo.Add(new Ponto4D(0.25, 0.75)); // H = (0.25, 0.75)
-      objetoSelecionado = new Poligono(objetoSelecionado, ref rotuloAtual, pontosPoligonoTriangulo);
-      #endregion
+      // #region Objeto: polígono qualquer  
+      // List<Ponto4D> pontosPoligonoBandeira = new List<Ponto4D>();
+      // pontosPoligonoBandeira.Add(new Ponto4D(0.25, 0.25));  // A = (0.25, 0.25)
+      // pontosPoligonoBandeira.Add(new Ponto4D(0.75, 0.25));  // B = (0.75, 0.25)
+      // pontosPoligonoBandeira.Add(new Ponto4D(0.75, 0.75));  // C = (0.75, 0.75)
+      // pontosPoligonoBandeira.Add(new Ponto4D(0.50, 0.50));  // D = (0.50, 0.50)
+      // pontosPoligonoBandeira.Add(new Ponto4D(0.25, 0.75));  // E = (0.25, 0.75)
+      // objetoSelecionado = new Poligono(mundo, ref rotuloAtual, pontosPoligonoBandeira);
+      // #endregion
+      // #region declara um objeto filho ao polígono
+      // List<Ponto4D> pontosPoligonoTriangulo = new List<Ponto4D>();
+      // pontosPoligonoTriangulo.Add(new Ponto4D(0.50, 0.50)); // F = (0.50, 0.50)
+      // pontosPoligonoTriangulo.Add(new Ponto4D(0.75, 0.75)); // G = (0.75, 0.75)
+      // pontosPoligonoTriangulo.Add(new Ponto4D(0.25, 0.75)); // H = (0.25, 0.75)
+      // objetoSelecionado = new Poligono(objetoSelecionado, ref rotuloAtual, pontosPoligonoTriangulo);
+      // #endregion
     }
 
     protected override void OnRenderFrame(FrameEventArgs e)
@@ -177,11 +180,20 @@ namespace gcgcg
       }
       if (MouseState.IsButtonDown(MouseButton.Right) && objetoSelecionado != null)
       {
-        Console.WriteLine("MouseState.IsButtonDown(MouseButton.Right)");
+        //Console.WriteLine("MouseState.IsButtonDown(MouseButton.Right)");
+
+        if(isEnterPressedBefore == true){
+          poligonPointsCache.Clear();
+          Poligono temporaryPoligon = new Poligono(mundo, ref rotuloAtual, poligonPointsCache);
+          objetoSelecionado = temporaryPoligon;
+          isEnterPressedBefore = false;
+        }
 
         int janelaLargura = ClientSize.X;
         int janelaAltura = ClientSize.Y;
         Ponto4D mousePonto = new Ponto4D(MousePosition.X, MousePosition.Y);
+        poligonPointsCache.Add(mousePonto);
+        temporaryPoligon.Atualizar(poligonPointsCache);
         Ponto4D sruPonto = Utilitario.NDC_TelaSRU(janelaLargura, janelaAltura, mousePonto);
 
         objetoSelecionado.PontosAlterar(sruPonto, 0);
