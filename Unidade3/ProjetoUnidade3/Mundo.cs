@@ -182,14 +182,22 @@ namespace gcgcg
         Console.WriteLine("Vector2i windowSize: " + ClientSize);
       }
       if(MouseState.IsButtonPressed(MouseButton.Right) && objetoSelecionado == null){
-        List<Ponto4D> poligonPointsCache = new List<Ponto4D>();
         mousePonto = new Ponto4D(MousePosition.X, MousePosition.Y);
-        poligonPointsCache.Add(mousePonto);
+        int janelaLargura = ClientSize.X;
+        int janelaAltura = ClientSize.Y;
+        Ponto4D sruPonto = Utilitario.NDC_TelaSRU(janelaLargura, janelaAltura, mousePonto);
+        
+        List<Ponto4D> poligonPointsCache = new List<Ponto4D>();
+        poligonPointsCache.Add(sruPonto);
         objetoSelecionado = new Poligono(mundo, ref rotuloAtual, poligonPointsCache);
       }
       if(MouseState.IsButtonPressed(MouseButton.Right) && objetoSelecionado != null){
         mousePonto = new Ponto4D(MousePosition.X, MousePosition.Y);
-        objetoSelecionado.PontosAdicionar(mousePonto);
+        int janelaLargura = ClientSize.X;
+        int janelaAltura = ClientSize.Y;
+        
+        Ponto4D sruPonto = Utilitario.NDC_TelaSRU(janelaLargura, janelaAltura, mousePonto);
+        objetoSelecionado.PontosAdicionar(sruPonto);
         objetoSelecionado.ObjetoAtualizar();
         // string[] lines = { MousePosition.X.ToString(), MousePosition.Y.ToString(), objetoSelecionado.len_poligono().ToString() };
 
