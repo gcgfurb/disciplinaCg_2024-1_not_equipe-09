@@ -57,6 +57,10 @@ namespace gcgcg
       }
     }
 
+    public int len_poligono(){
+      return pontosLista.Count;
+    }
+
     private void ObjetoAdicionar(Objeto objetoFilho)
     {
       if (objetoFilho == null)

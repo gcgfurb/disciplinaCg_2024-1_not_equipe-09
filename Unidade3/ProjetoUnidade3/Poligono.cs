@@ -10,15 +10,14 @@ namespace gcgcg
   {
     public Poligono(Objeto _paiRef, ref char _rotulo, List<Ponto4D> pontosPoligono) : base(_paiRef, ref _rotulo)
     {
-      PrimitivaTipo = PrimitiveType.LineLoop;
+      PrimitivaTipo = PrimitiveType.Points;
       PrimitivaTamanho = 1;
-      //base.pontosLista = pontosPoligono;
-      Atualizar(pontosPoligono);
+      base.pontosLista = pontosPoligono;
+      Atualizar();
     }
 
-    public void Atualizar(List<Ponto4D> pontosPoligono)
+    private void Atualizar()
     {
-      base.pontosLista = pontosPoligono;
       base.ObjetoAtualizar();
     }
 

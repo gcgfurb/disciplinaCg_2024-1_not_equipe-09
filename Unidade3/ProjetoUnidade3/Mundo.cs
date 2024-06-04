@@ -4,6 +4,8 @@
 // #define CG_OpenTK
 // #define CG_DirectX      
 #define CG_Privado  
+using System.IO;
+using System;
 
 using CG_Biblioteca;
 using OpenTK.Graphics.OpenGL4;
@@ -44,8 +46,9 @@ namespace gcgcg
     private Shader _shaderMagenta;
     private Shader _shaderAmarela;
     private bool isEnterPressedBefore = true;
-    private List<Ponto4D> poligonPointsCache = new List<Ponto4D>();
     private Poligono temporaryPoligon = null;
+    private Ponto4D mousePonto = null;
+    private Ponto4D sruPonto;
 
     public Mundo(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
       : base(gameWindowSettings, nativeWindowSettings)
@@ -163,7 +166,7 @@ namespace gcgcg
         objetoSelecionado.MatrizRotacao(10);
       if (estadoTeclado.IsKeyPressed(Keys.D2) && objetoSelecionado != null)
         objetoSelecionado.MatrizRotacao(-10);
-    if (estadoTeclado.IsKeyPressed(Keys.D3) && objetoSelecionado != null)   //FIXME: problema depois de usa rotação pto qquer, não usa o novo centro da BBOX
+      if (estadoTeclado.IsKeyPressed(Keys.D3) && objetoSelecionado != null)   //FIXME: problema depois de usa rotação pto qquer, não usa o novo centro da BBOX
         objetoSelecionado.MatrizRotacaoZBBox(10);
       if (estadoTeclado.IsKeyPressed(Keys.D4) && objetoSelecionado != null)
         objetoSelecionado.MatrizRotacaoZBBox(-10);
@@ -178,29 +181,33 @@ namespace gcgcg
         Console.WriteLine("Vector2 mousePosition: " + MousePosition);
         Console.WriteLine("Vector2i windowSize: " + ClientSize);
       }
-      if (MouseState.IsButtonDown(MouseButton.Right) && objetoSelecionado != null)
-      {
-        //Console.WriteLine("MouseState.IsButtonDown(MouseButton.Right)");
-
-        if(isEnterPressedBefore == true){
-          poligonPointsCache.Clear();
-          Poligono temporaryPoligon = new Poligono(mundo, ref rotuloAtual, poligonPointsCache);
-          objetoSelecionado = temporaryPoligon;
-          isEnterPressedBefore = false;
-        }
-
-        int janelaLargura = ClientSize.X;
-        int janelaAltura = ClientSize.Y;
-        Ponto4D mousePonto = new Ponto4D(MousePosition.X, MousePosition.Y);
+      if(MouseState.IsButtonPressed(MouseButton.Right) && objetoSelecionado == null){
+        List<Ponto4D> poligonPointsCache = new List<Ponto4D>();
+        mousePonto = new Ponto4D(MousePosition.X, MousePosition.Y);
         poligonPointsCache.Add(mousePonto);
-        temporaryPoligon.Atualizar(poligonPointsCache);
-        Ponto4D sruPonto = Utilitario.NDC_TelaSRU(janelaLargura, janelaAltura, mousePonto);
-
-        objetoSelecionado.PontosAlterar(sruPonto, 0);
+        objetoSelecionado = new Poligono(mundo, ref rotuloAtual, poligonPointsCache);
       }
-      if (MouseState.IsButtonReleased(MouseButton.Right))
-      {
-        Console.WriteLine("MouseState.IsButtonReleased(MouseButton.Right)");
+      if(MouseState.IsButtonPressed(MouseButton.Right) && objetoSelecionado != null){
+        mousePonto = new Ponto4D(MousePosition.X, MousePosition.Y);
+        objetoSelecionado.PontosAdicionar(mousePonto);
+        objetoSelecionado.ObjetoAtualizar();
+        // string[] lines = { MousePosition.X.ToString(), MousePosition.Y.ToString(), objetoSelecionado.len_poligono().ToString() };
+
+        // // Set a variable to the Documents path.
+        // string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+        // // Write the string array to a new file named "WriteLines.txt".
+        // using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "WriteLines.txt")))
+        // {
+        //   foreach (string line in lines)
+        //     outputFile.WriteLine(line);
+        // }
+
+        
+        //int janelaLargura = ClientSize.X;
+        //int janelaAltura = ClientSize.Y;
+        //Ponto4D mousePonto = new Ponto4D(MousePosition.X, MousePosition.Y);
+        //Ponto4D sruPonto = Utilitario.NDC_TelaSRU(janelaLargura, janelaAltura, mousePonto);
       }
 
       #endregion
