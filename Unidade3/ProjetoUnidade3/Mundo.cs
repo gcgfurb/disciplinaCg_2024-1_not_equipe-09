@@ -54,7 +54,7 @@ namespace gcgcg
     private BBox boudingBox = null;
     private Transformacao4D boudingBox4d = null;
     private int paridade;
-
+    private bool possivelSelecao;
     public Mundo(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
       : base(gameWindowSettings, nativeWindowSettings)
     {
@@ -131,8 +131,29 @@ namespace gcgcg
         objetoSelecionado = null;
         temporaryPoligon = null;
       }
-      if(estadoTeclado.IsKeyPressed(Keys.D) && objetoSelecionado != null && isEnterPressedBefore == true){
-        listPoligonos.Remove(objetoSelecionado);
+      if (estadoTeclado.IsKeyPressed(Keys.D) && objetoSelecionado != null && isEnterPressedBefore == true)
+      {
+        listPoligonos.Remove((Poligono)objetoSelecionado);
+      }
+      if (estadoTeclado.IsKeyPressed(Keys.V) && objetoSelecionado != null && isEnterPressedBefore == true)
+      {
+        Ponto4D verticeMovimentar = null;
+        mousePonto = getMousePoint();
+        double distancia_anterior = double.MaxValue;
+        double distancia_atual;
+        Poligono tempPoligono = (Poligono) objetoSelecionado;
+        List<Ponto4D> points = tempPoligono.getPointList(); 
+
+        for (int i = 0; i < points.Count; i++)
+        {
+          distancia_atual = Matematica.distancia(mousePonto, points[i]);
+          if(distancia_atual < distancia_anterior){
+            distancia_anterior = distancia_atual;
+            verticeMovimentar = points[i];
+          }
+
+          verticeMovimentar.X = verticeMovimentar.X + 0.01;
+        }
       }
       if (estadoTeclado.IsKeyPressed(Keys.G))                 //TODO: testar com grafo maior ,, irmãos
         mundo.GrafocenaImprimir("");
@@ -174,24 +195,34 @@ namespace gcgcg
       if (MouseState.IsButtonPressed(MouseButton.Left))
       {
         mousePonto = getMousePoint();
+        possivelSelecao = false;
 
         for (int i = 0; i < listPoligonos.Count; i++)
         {
-
-          if (listPoligonos[i].Bbox().Dentro(mousePonto)){
+          if (listPoligonos[i].Bbox().Dentro(mousePonto))
+          {
 
             paridade = 0;
 
-            for(int j = 1; j < listPoligonos[i].getPointList().Count; j++){
-              if(Matematica.ScanLine(mousePonto, listPoligonos[i].PontosId(j - 1), listPoligonos[i].PontosId(j))){
+            for (int j = 1; j < listPoligonos[i].getPointList().Count; j++)
+            {
+              if (Matematica.ScanLine(mousePonto, listPoligonos[i].PontosId(j - 1), listPoligonos[i].PontosId(j)))
+              {
                 paridade += 1;
               }
             }
 
-            if(paridade % 2 != 0){
+            if (paridade % 2 != 0)
+            {
               objetoSelecionado = listPoligonos[i];
-            } 
+              possivelSelecao = true;
+            }
           }
+        }
+
+        if (possivelSelecao == false)
+        {
+          objetoSelecionado = null;
         }
       }
       if (MouseState.IsButtonPressed(MouseButton.Right) && isEnterPressedBefore == true)
