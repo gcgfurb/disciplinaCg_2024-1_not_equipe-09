@@ -188,6 +188,13 @@ namespace gcgcg
         objetoSelecionado.MatrizRotacaoZBBox(10);
       if (estadoTeclado.IsKeyPressed(Keys.D4) && objetoSelecionado != null)
         objetoSelecionado.MatrizRotacaoZBBox(-10);
+
+      if (estadoTeclado.IsKeyPressed(Keys.R) && objetoSelecionado != null)
+        objetoSelecionado.ShaderObjeto = _shaderVermelha;
+      if (estadoTeclado.IsKeyPressed(Keys.G) && objetoSelecionado != null)
+        objetoSelecionado.ShaderObjeto = _shaderVerde;
+      if (estadoTeclado.IsKeyPressed(Keys.B) && objetoSelecionado != null)
+        objetoSelecionado.ShaderObjeto = _shaderAzul;
       #endregion
 
       #region  Mouse
