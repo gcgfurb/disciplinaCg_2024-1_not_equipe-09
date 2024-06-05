@@ -137,23 +137,7 @@ namespace gcgcg
       }
       if (estadoTeclado.IsKeyPressed(Keys.V) && objetoSelecionado != null && isEnterPressedBefore == true)
       {
-        Ponto4D verticeMovimentar = null;
-        mousePonto = getMousePoint();
-        double distancia_anterior = double.MaxValue;
-        double distancia_atual;
-        Poligono tempPoligono = (Poligono) objetoSelecionado;
-        List<Ponto4D> points = tempPoligono.getPointList(); 
-
-        for (int i = 0; i < points.Count; i++)
-        {
-          distancia_atual = Matematica.distancia(mousePonto, points[i]);
-          if(distancia_atual < distancia_anterior){
-            distancia_anterior = distancia_atual;
-            verticeMovimentar = points[i];
-          }
-
-          verticeMovimentar.X = verticeMovimentar.X + 0.01;
-        }
+        MoveVerticeMaisProximo();
       }
       if (estadoTeclado.IsKeyPressed(Keys.G))                 //TODO: testar com grafo maior ,, irmãos
         mundo.GrafocenaImprimir("");
@@ -248,6 +232,35 @@ namespace gcgcg
 
       #endregion
 
+    }
+
+    private void MoveVerticeMaisProximo(){
+      if (objetoSelecionado == null)
+        return;
+
+      mousePonto = getMousePoint();
+      Poligono poligono = objetoSelecionado as Poligono;
+
+      if (poligono == null)
+        return;
+
+      double menorDistancia = double.MaxValue;
+      int verticeMaisProximoIndex = -1;
+
+      for (int i = 0; i < poligono.PontosListaTamanho; i++)
+      {
+        double distancia = Matematica.distancia(mousePonto, poligono.PontosId(i));
+        if (distancia < menorDistancia)
+        {
+          menorDistancia = distancia;
+          verticeMaisProximoIndex = i;
+        }
+      }
+
+      if (verticeMaisProximoIndex != -1)
+      {
+        poligono.PontosAlterar(new Ponto4D(mousePonto.X, mousePonto.Y, mousePonto.Z, 1), verticeMaisProximoIndex);
+      }
     }
 
     private Ponto4D getMousePoint()
