@@ -21,8 +21,14 @@ namespace gcgcg
       base.ObjetoAtualizar();
     }
 
-    public List<Ponto4D> getPointList(){
+    public List<Ponto4D> getPointList()
+    {
       return base.pontosLista;
+    }
+
+    public void PontosLimpar()
+    {
+      base.pontosLista.Clear();
     }
 
     public void PontosRemover(int index)
