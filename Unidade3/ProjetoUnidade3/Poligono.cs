@@ -10,7 +10,7 @@ namespace gcgcg
   {
     public Poligono(Objeto _paiRef, ref char _rotulo, List<Ponto4D> pontosPoligono) : base(_paiRef, ref _rotulo)
     {
-      PrimitivaTipo = PrimitiveType.Points;
+      PrimitivaTipo = PrimitiveType.LineLoop;
       PrimitivaTamanho = 1;
       base.pontosLista = pontosPoligono;
       Atualizar();
@@ -19,6 +19,10 @@ namespace gcgcg
     private void Atualizar()
     {
       base.ObjetoAtualizar();
+    }
+
+    public List<Ponto4D> getPointList(){
+      return base.pontosLista;
     }
 
 #if CG_Debug
