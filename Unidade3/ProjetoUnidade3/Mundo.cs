@@ -139,6 +139,10 @@ namespace gcgcg
       {
         MoveVerticeMaisProximo();
       }
+      if (estadoTeclado.IsKeyPressed(Keys.E) && objetoSelecionado != null && isEnterPressedBefore == true)
+      {
+        RemoverVerticeMaisProximo();
+      }
       if (estadoTeclado.IsKeyPressed(Keys.G))                 //TODO: testar com grafo maior ,, irmãos
         mundo.GrafocenaImprimir("");
       if (estadoTeclado.IsKeyPressed(Keys.P) && objetoSelecionado != null)
@@ -260,6 +264,35 @@ namespace gcgcg
       if (verticeMaisProximoIndex != -1)
       {
         poligono.PontosAlterar(new Ponto4D(mousePonto.X, mousePonto.Y, mousePonto.Z, 1), verticeMaisProximoIndex);
+      }
+    }
+
+    private void RemoverVerticeMaisProximo(){
+      if (objetoSelecionado == null)
+        return;
+
+      mousePonto = getMousePoint();
+      Poligono poligono = objetoSelecionado as Poligono;
+
+      if (poligono == null)
+        return;
+
+      double menorDistancia = double.MaxValue;
+      int verticeMaisProximoIndex = -1;
+
+      for (int i = 0; i < poligono.PontosListaTamanho; i++)
+      {
+        double distancia = Matematica.distancia(mousePonto, poligono.PontosId(i));
+        if (distancia < menorDistancia)
+        {
+          menorDistancia = distancia;
+          verticeMaisProximoIndex = i;
+        }
+      }
+
+      if (verticeMaisProximoIndex != -1)
+      {
+        poligono.PontosRemover(verticeMaisProximoIndex);
       }
     }
 

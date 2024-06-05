@@ -25,6 +25,15 @@ namespace gcgcg
       return base.pontosLista;
     }
 
+    public void PontosRemover(int index)
+    {
+      if (index >= 0 && index < pontosLista.Count)
+      {
+        pontosLista.RemoveAt(index);
+        ObjetoAtualizar();
+      }
+    }
+
 #if CG_Debug
     public override string ToString()
     {
