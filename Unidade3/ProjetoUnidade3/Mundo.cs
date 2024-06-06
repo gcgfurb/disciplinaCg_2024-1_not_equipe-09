@@ -143,6 +143,10 @@ namespace gcgcg
       {
         RemoverVerticeMaisProximo();
       }
+      if (estadoTeclado.IsKeyPressed(Keys.P) && objetoSelecionado != null && isEnterPressedBefore == true)
+      {
+        AlternarTipoPoligono();
+      }
       if (estadoTeclado.IsKeyPressed(Keys.G))                 //TODO: testar com grafo maior ,, irmãos
         mundo.GrafocenaImprimir("");
       if (estadoTeclado.IsKeyPressed(Keys.P) && objetoSelecionado != null)
@@ -294,6 +298,28 @@ namespace gcgcg
       {
         poligono.PontosRemover(verticeMaisProximoIndex);
       }
+    }
+
+    private void AlternarTipoPoligono()
+    {
+      if (objetoSelecionado == null)
+        return;
+
+      Poligono poligono = objetoSelecionado as Poligono;
+
+      if (poligono == null)
+        return;
+
+      if (poligono.PrimitivaTipo == PrimitiveType.LineLoop)
+      {
+        poligono.PrimitivaTipo = PrimitiveType.LineStrip;
+      }
+      else
+      {
+        poligono.PrimitivaTipo = PrimitiveType.LineLoop;
+      }
+
+      poligono.ObjetoAtualizar();
     }
 
     private Ponto4D getMousePoint()
