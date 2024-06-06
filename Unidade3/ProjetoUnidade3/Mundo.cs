@@ -125,20 +125,27 @@ namespace gcgcg
         objetoSelecionado = mundo.GrafocenaBuscaProximo(objetoSelecionado);
         // objetoSelecionado.shaderObjeto = _shaderAmarela;
       }
+
       if (estadoTeclado.IsKeyPressed(Keys.Enter))
       {
         isEnterPressedBefore = true;
         objetoSelecionado = null;
         temporaryPoligon = null;
       }
+
       if (estadoTeclado.IsKeyPressed(Keys.D) && objetoSelecionado != null && isEnterPressedBefore == true)
       {
-        listPoligonos.Remove((Poligono)objetoSelecionado);
+        listPoligonos.Remove((Poligono) objetoSelecionado);
+        Poligono poligono = objetoSelecionado as Poligono;
+        poligono.PontosLimpar();
+        objetoSelecionado = null;
       }
+
       if (estadoTeclado.IsKeyPressed(Keys.V) && objetoSelecionado != null && isEnterPressedBefore == true)
       {
         MoveVerticeMaisProximo();
       }
+
       if (estadoTeclado.IsKeyPressed(Keys.E) && objetoSelecionado != null && isEnterPressedBefore == true)
       {
         RemoverVerticeMaisProximo();
@@ -224,6 +231,7 @@ namespace gcgcg
           objetoSelecionado = null;
         }
       }
+
       if (MouseState.IsButtonPressed(MouseButton.Right) && isEnterPressedBefore == true)
       {
         List<Ponto4D> poligonPointsCache = new List<Ponto4D>();
@@ -232,14 +240,13 @@ namespace gcgcg
         objetoSelecionado = listPoligonos.Last();
         isEnterPressedBefore = false;
       }
+
       if (MouseState.IsButtonPressed(MouseButton.Right) && isEnterPressedBefore == false)
       {
         objetoSelecionado.PontosAdicionar(getMousePoint());
         objetoSelecionado.ObjetoAtualizar();
       }
-
       #endregion
-
     }
 
     private void MoveVerticeMaisProximo(){
@@ -327,7 +334,6 @@ namespace gcgcg
       mousePonto = new Ponto4D(MousePosition.X, MousePosition.Y);
       int janelaLargura = ClientSize.X;
       int janelaAltura = ClientSize.Y;
-
       Ponto4D sruPonto = Utilitario.NDC_TelaSRU(janelaLargura, janelaAltura, mousePonto);
 
       return sruPonto;
@@ -431,7 +437,6 @@ namespace gcgcg
 #endif
       }
     }
-#endif    
-
+#endif
   }
 }
