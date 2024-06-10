@@ -4,7 +4,6 @@
 // #define CG_OpenTK
 // #define CG_DirectX      
 #define CG_Privado  
-using System.IO;
 using System;
 using System.Linq;
 
@@ -13,7 +12,6 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Windowing.Desktop;
-using System;
 using OpenTK.Mathematics;
 using System.Collections.Generic;
 
@@ -48,11 +46,10 @@ namespace gcgcg
     private Shader _shaderAmarela;
     private bool isEnterPressedBefore = true;
     private Poligono temporaryPoligon = null;
+    private Poligono temporaryChildPolygon = null;
     private Ponto4D mousePonto = null;
-    private Ponto4D sruPonto;
-    private List<Poligono> listPoligonos = new List<Poligono>();
-    private BBox boudingBox = null;
-    private Transformacao4D boudingBox4d = null;
+    private bool isSelectedByUserClick = false;
+    private readonly List<Poligono> listPoligonos = [];
     private int paridade;
     private bool possivelSelecao;
     public Mundo(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
@@ -130,15 +127,27 @@ namespace gcgcg
       {
         isEnterPressedBefore = true;
         objetoSelecionado = null;
+        isSelectedByUserClick = false;
         temporaryPoligon = null;
+        temporaryChildPolygon = null;
       }
 
       if (estadoTeclado.IsKeyPressed(Keys.D) && objetoSelecionado != null && isEnterPressedBefore == true)
       {
-        listPoligonos.Remove((Poligono) objetoSelecionado);
+        listPoligonos.Remove((Poligono)objetoSelecionado);
+        List<Poligono> childPolygonList = listPoligonos.FindAll(p => p.PaiRef() == objetoSelecionado);
+        if (childPolygonList.Count > 0)
+        {
+          foreach (Poligono childPolygon in childPolygonList)
+          {
+            listPoligonos.Remove(childPolygon);
+            childPolygon.PontosLimpar();
+          }
+        }
         Poligono poligono = objetoSelecionado as Poligono;
         poligono.PontosLimpar();
         objetoSelecionado = null;
+        isSelectedByUserClick = false;
       }
 
       if (estadoTeclado.IsKeyPressed(Keys.V) && objetoSelecionado != null && isEnterPressedBefore == true)
@@ -221,6 +230,7 @@ namespace gcgcg
             if (paridade % 2 != 0)
             {
               objetoSelecionado = listPoligonos[i];
+              isSelectedByUserClick = true;
               possivelSelecao = true;
             }
           }
@@ -229,27 +239,52 @@ namespace gcgcg
         if (possivelSelecao == false)
         {
           objetoSelecionado = null;
+          isSelectedByUserClick = false;
         }
       }
 
-      if (MouseState.IsButtonPressed(MouseButton.Right) && isEnterPressedBefore == true)
+      if (MouseState.IsButtonPressed(MouseButton.Right) && objetoSelecionado == null && temporaryPoligon == null)
       {
-        List<Ponto4D> poligonPointsCache = new List<Ponto4D>();
-        poligonPointsCache.Add(getMousePoint());
-        listPoligonos.Add(new Poligono(mundo, ref rotuloAtual, poligonPointsCache));
+        List<Ponto4D> poligonPointsCache = [getMousePoint()];
+        temporaryPoligon = new Poligono(mundo, ref rotuloAtual, poligonPointsCache);
+        listPoligonos.Add(temporaryPoligon);
         objetoSelecionado = listPoligonos.Last();
-        isEnterPressedBefore = false;
       }
-
-      if (MouseState.IsButtonPressed(MouseButton.Right) && isEnterPressedBefore == false)
+      if (MouseState.IsButtonPressed(MouseButton.Right) && objetoSelecionado != null && temporaryPoligon != null)
       {
         objetoSelecionado.PontosAdicionar(getMousePoint());
         objetoSelecionado.ObjetoAtualizar();
       }
+      if (MouseState.IsButtonPressed(MouseButton.Right) && objetoSelecionado != null && isSelectedByUserClick && temporaryChildPolygon == null)
+      {
+        List<Ponto4D> childPolygonPointsCache = [getMousePoint()];
+        temporaryChildPolygon = new Poligono(objetoSelecionado, ref rotuloAtual, childPolygonPointsCache);
+        listPoligonos.Add(temporaryChildPolygon);
+      }
+      if (MouseState.IsButtonPressed(MouseButton.Right) && objetoSelecionado != null && isSelectedByUserClick && temporaryChildPolygon != null)
+      {
+        temporaryChildPolygon.PontosAdicionar(getMousePoint());
+        temporaryChildPolygon.ObjetoAtualizar();
+      }
+
+      // if (MouseState.IsButtonPressed(MouseButton.Right) && isEnterPressedBefore == true)
+      // {
+      //   List<Ponto4D> poligonPointsCache = [getMousePoint()];
+      //   listPoligonos.Add(new Poligono(mundo, ref rotuloAtual, poligonPointsCache));
+      //   objetoSelecionado = listPoligonos.Last();
+      //   isEnterPressedBefore = false;
+      // }
+
+      // if (MouseState.IsButtonPressed(MouseButton.Right) && isEnterPressedBefore == false)
+      // {
+      //   objetoSelecionado.PontosAdicionar(getMousePoint());
+      //   objetoSelecionado.ObjetoAtualizar();
+      // }
       #endregion
     }
 
-    private void MoveVerticeMaisProximo(){
+    private void MoveVerticeMaisProximo()
+    {
       if (objetoSelecionado == null)
         return;
 
@@ -278,7 +313,8 @@ namespace gcgcg
       }
     }
 
-    private void RemoverVerticeMaisProximo(){
+    private void RemoverVerticeMaisProximo()
+    {
       if (objetoSelecionado == null)
         return;
 
