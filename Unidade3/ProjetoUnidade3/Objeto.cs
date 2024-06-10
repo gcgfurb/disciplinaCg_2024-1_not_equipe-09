@@ -56,7 +56,13 @@ namespace gcgcg
         ObjetoAdicionar(objetoFilho);
       }
     }
-    
+
+    // method for getting the _paiRef object
+    public Objeto PaiRef()
+    {
+      return paiRef;
+    }
+
     private void ObjetoAdicionar(Objeto objetoFilho)
     {
       if (objetoFilho == null)
