@@ -64,8 +64,11 @@ namespace gcgcg
 
       GL.Enable(EnableCap.DepthTest);       // Ativar teste de profundidade
       GL.Enable(EnableCap.CullFace);     // Desenha os dois lados da face
-      // GL.FrontFace(FrontFaceDirection.Cw);
-      // GL.CullFace(CullFaceMode.FrontAndBack);
+      //GL.FrontFace(FrontFaceDirection.Cw);
+      //GL.CullFace(CullFaceMode.FrontAndBack);
+
+      GL.Enable(EnableCap.Dither);
+     // GL.Enable(EnableCap.Light0);
 
       #region Cores
       _shaderBranca = new Shader("Shaders/shader.vert", "Shaders/shaderBranca.frag");
@@ -100,7 +103,7 @@ namespace gcgcg
 
       objetoSelecionado.shaderCor = _shaderAmarela;
 
-      _camera = new Camera(Vector3.UnitZ * 5, ClientSize.X / (float)ClientSize.Y);
+      _camera = new Camera(Vector3.UnitZ * 5, ClientSize.X / (float) ClientSize.Y);
     }
 
     protected override void OnRenderFrame(FrameEventArgs e)
