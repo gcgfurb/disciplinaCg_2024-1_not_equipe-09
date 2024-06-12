@@ -68,7 +68,6 @@ namespace gcgcg
       //GL.CullFace(CullFaceMode.FrontAndBack);
 
       GL.Enable(EnableCap.Dither);
-     // GL.Enable(EnableCap.Light0);
 
       #region Cores
       _shaderBranca = new Shader("Shaders/shader.vert", "Shaders/shaderBranca.frag");
