@@ -5,6 +5,7 @@ using CG_Biblioteca;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System.Drawing;
+using System.Collections.Generic;
 
 namespace gcgcg
 {
@@ -15,10 +16,10 @@ namespace gcgcg
     // Vector3[] normals;
     // int[] colors;
 
-    public Cubo(Objeto _paiRef, ref char _rotulo) : base(_paiRef, ref _rotulo)
+    public Cubo(Objeto _paiRef, ref char _rotulo, int primitiveSize) : base(_paiRef, ref _rotulo)
     {
       PrimitivaTipo = PrimitiveType.TriangleFan;
-      PrimitivaTamanho = 10;
+      PrimitivaTamanho = primitiveSize;
 
       vertices = new Ponto4D[]
       {
@@ -43,7 +44,13 @@ namespace gcgcg
       base.PontosAdicionar(vertices[2]);
       base.PontosAdicionar(vertices[6]);
       base.PontosAdicionar(vertices[7]);
-      
+
+      // Ajuste de rendericazao da parte de cima do Cubo.
+      base.PontosAdicionar(vertices[3]);
+      base.PontosAdicionar(vertices[2]);
+      base.PontosAdicionar(vertices[7]);
+      base.PontosAdicionar(vertices[6]);
+
       // // 4, 7, 6, 5 Face do fundo
       base.PontosAdicionar(vertices[4]);
       base.PontosAdicionar(vertices[7]);
@@ -73,8 +80,26 @@ namespace gcgcg
 
     private void Atualizar()
     {
-
       base.ObjetoAtualizar();
+    }
+
+    public List<Texture> GetCubeTextures()
+    {
+      List<Texture> textures = new List<Texture>();
+      Texture alexandreTexture = Texture.LoadFromFile("assets/alexandre.jpg");
+      Texture brunoTexture = Texture.LoadFromFile("assets/bruno.jpg");
+      Texture joshuaTexture = Texture.LoadFromFile("assets/joshua.jpg");
+      Texture leonardoTexture = Texture.LoadFromFile("assets/leonardo.jpg");
+      Texture lorhanTexture = Texture.LoadFromFile("assets/lorhan.jpg");
+
+      textures.AddRange(new List<Texture> {
+        alexandreTexture,
+        brunoTexture,
+        joshuaTexture,
+        leonardoTexture,
+        lorhanTexture
+      });
+      return textures;
     }
 
 #if CG_Debug

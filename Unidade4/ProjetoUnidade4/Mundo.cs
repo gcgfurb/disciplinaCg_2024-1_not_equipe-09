@@ -22,8 +22,9 @@ namespace gcgcg
   {
     private static Objeto mundo = null;
     private char rotuloNovo = '?';
-    private Objeto objetoSelecionado = null;
-
+    private Objeto point;
+    private Objeto biggerCube = null;
+    private List<Texture> textures;
     private readonly float[] _sruEixos =
     {
       -0.5f,  0.0f,  0.0f, /* X- */      0.5f,  0.0f,  0.0f, /* X+ */
@@ -68,6 +69,7 @@ namespace gcgcg
       //GL.CullFace(CullFaceMode.FrontAndBack);
 
       GL.Enable(EnableCap.Dither);
+      GL.Enable(EnableCap.Texture2D);
 
       #region Cores
       _shaderBranca = new Shader("Shaders/shader.vert", "Shaders/shaderBranca.frag");
@@ -89,18 +91,21 @@ namespace gcgcg
       GL.EnableVertexAttribArray(0);
       #endregion
 
-      #region Objeto: ponto  
-      objetoSelecionado = new Ponto(mundo, ref rotuloNovo, new Ponto4D(2.0, 0.0));
-      objetoSelecionado.PrimitivaTipo = PrimitiveType.Points;
-      objetoSelecionado.PrimitivaTamanho = 5;
+      #region Object: Point  
+      point = new Ponto(mundo, ref rotuloNovo, new Ponto4D(2.0, 0.0));
+      point.PrimitivaTipo = PrimitiveType.Points;
+      point.PrimitivaTamanho = 5;
       #endregion
 
-      #region Objeto: Cubo
-      objetoSelecionado = new Cubo(mundo, ref rotuloNovo);
+      #region Object: Bigger Cube
+      biggerCube = new Cubo(mundo, ref rotuloNovo, 10);
+      biggerCube.shaderCor = _shaderAmarela;
+      
+      textures = ((Cubo) biggerCube).GetCubeTextures();
+      UseTextures();
+      //OnLoadSetTexturesOnShader();
       #endregion
       // objetoSelecionado.MatrizEscalaXYZ(0.2, 0.2, 0.2);
-
-      objetoSelecionado.shaderCor = _shaderAmarela;
 
       _camera = new Camera(Vector3.UnitZ * 5, ClientSize.X / (float) ClientSize.Y);
     }
@@ -110,6 +115,8 @@ namespace gcgcg
       base.OnRenderFrame(e);
 
       GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+      UseTextures();
 
       mundo.Desenhar(new Transformacao4D(), _camera);
 
@@ -130,48 +137,48 @@ namespace gcgcg
         Close();
       if (estadoTeclado.IsKeyPressed(Keys.Space))
       {
-        if (objetoSelecionado == null)
-          objetoSelecionado = mundo;
-        objetoSelecionado.shaderCor = _shaderBranca;
-        objetoSelecionado = mundo.GrafocenaBuscaProximo(objetoSelecionado);
-        objetoSelecionado.shaderCor = _shaderAmarela;
+        if (biggerCube == null)
+          biggerCube = mundo;
+        biggerCube.shaderCor = _shaderBranca;
+        biggerCube = mundo.GrafocenaBuscaProximo(biggerCube);
+        biggerCube.shaderCor = _shaderAmarela;
       }
       if (estadoTeclado.IsKeyPressed(Keys.G))
         mundo.GrafocenaImprimir("");
-      if (estadoTeclado.IsKeyPressed(Keys.P) && objetoSelecionado != null)
-        Console.WriteLine(objetoSelecionado.ToString());
-      if (estadoTeclado.IsKeyPressed(Keys.M) && objetoSelecionado != null)
-        objetoSelecionado.MatrizImprimir();
-      if (estadoTeclado.IsKeyPressed(Keys.I) && objetoSelecionado != null)
-        objetoSelecionado.MatrizAtribuirIdentidade();
-      if (estadoTeclado.IsKeyPressed(Keys.Left) && objetoSelecionado != null)
-        objetoSelecionado.MatrizTranslacaoXYZ(-0.05, 0, 0);
-      if (estadoTeclado.IsKeyPressed(Keys.Right) && objetoSelecionado != null)
-        objetoSelecionado.MatrizTranslacaoXYZ(0.05, 0, 0);
-      if (estadoTeclado.IsKeyPressed(Keys.Up) && objetoSelecionado != null)
-        objetoSelecionado.MatrizTranslacaoXYZ(0, 0.05, 0);
-      if (estadoTeclado.IsKeyPressed(Keys.Down) && objetoSelecionado != null)
-        objetoSelecionado.MatrizTranslacaoXYZ(0, -0.05, 0);
-      if (estadoTeclado.IsKeyPressed(Keys.O) && objetoSelecionado != null)
-        objetoSelecionado.MatrizTranslacaoXYZ(0, 0, 0.05);
-      if (estadoTeclado.IsKeyPressed(Keys.L) && objetoSelecionado != null)
-        objetoSelecionado.MatrizTranslacaoXYZ(0, 0, -0.05);
-      if (estadoTeclado.IsKeyPressed(Keys.PageUp) && objetoSelecionado != null)
-        objetoSelecionado.MatrizEscalaXYZ(2, 2, 2);
-      if (estadoTeclado.IsKeyPressed(Keys.PageDown) && objetoSelecionado != null)
-        objetoSelecionado.MatrizEscalaXYZ(0.5, 0.5, 0.5);
-      if (estadoTeclado.IsKeyPressed(Keys.Home) && objetoSelecionado != null)
-        objetoSelecionado.MatrizEscalaXYZBBox(0.5, 0.5, 0.5);
-      if (estadoTeclado.IsKeyPressed(Keys.End) && objetoSelecionado != null)
-        objetoSelecionado.MatrizEscalaXYZBBox(2, 2, 2);
-      if (estadoTeclado.IsKeyPressed(Keys.D1) && objetoSelecionado != null)
-        objetoSelecionado.MatrizRotacao(10);
-      if (estadoTeclado.IsKeyPressed(Keys.D2) && objetoSelecionado != null)
-        objetoSelecionado.MatrizRotacao(-10);
-      if (estadoTeclado.IsKeyPressed(Keys.D3) && objetoSelecionado != null)
-        objetoSelecionado.MatrizRotacaoZBBox(10);
-      if (estadoTeclado.IsKeyPressed(Keys.D4) && objetoSelecionado != null)
-        objetoSelecionado.MatrizRotacaoZBBox(-10);
+      if (estadoTeclado.IsKeyPressed(Keys.P) && biggerCube != null)
+        Console.WriteLine(biggerCube.ToString());
+      if (estadoTeclado.IsKeyPressed(Keys.M) && biggerCube != null)
+        biggerCube.MatrizImprimir();
+      if (estadoTeclado.IsKeyPressed(Keys.I) && biggerCube != null)
+        biggerCube.MatrizAtribuirIdentidade();
+      if (estadoTeclado.IsKeyPressed(Keys.Left) && biggerCube != null)
+        biggerCube.MatrizTranslacaoXYZ(-0.05, 0, 0);
+      if (estadoTeclado.IsKeyPressed(Keys.Right) && biggerCube != null)
+        biggerCube.MatrizTranslacaoXYZ(0.05, 0, 0);
+      if (estadoTeclado.IsKeyPressed(Keys.Up) && biggerCube != null)
+        biggerCube.MatrizTranslacaoXYZ(0, 0.05, 0);
+      if (estadoTeclado.IsKeyPressed(Keys.Down) && biggerCube != null)
+        biggerCube.MatrizTranslacaoXYZ(0, -0.05, 0);
+      if (estadoTeclado.IsKeyPressed(Keys.O) && biggerCube != null)
+        biggerCube.MatrizTranslacaoXYZ(0, 0, 0.05);
+      if (estadoTeclado.IsKeyPressed(Keys.L) && biggerCube != null)
+        biggerCube.MatrizTranslacaoXYZ(0, 0, -0.05);
+      if (estadoTeclado.IsKeyPressed(Keys.PageUp) && biggerCube != null)
+        biggerCube.MatrizEscalaXYZ(2, 2, 2);
+      if (estadoTeclado.IsKeyPressed(Keys.PageDown) && biggerCube != null)
+        biggerCube.MatrizEscalaXYZ(0.5, 0.5, 0.5);
+      if (estadoTeclado.IsKeyPressed(Keys.Home) && biggerCube != null)
+        biggerCube.MatrizEscalaXYZBBox(0.5, 0.5, 0.5);
+      if (estadoTeclado.IsKeyPressed(Keys.End) && biggerCube != null)
+        biggerCube.MatrizEscalaXYZBBox(2, 2, 2);
+      if (estadoTeclado.IsKeyPressed(Keys.D1) && biggerCube != null)
+        biggerCube.MatrizRotacao(10);
+      if (estadoTeclado.IsKeyPressed(Keys.D2) && biggerCube != null)
+        biggerCube.MatrizRotacao(-10);
+      if (estadoTeclado.IsKeyPressed(Keys.D3) && biggerCube != null)
+        biggerCube.MatrizRotacaoZBBox(10);
+      if (estadoTeclado.IsKeyPressed(Keys.D4) && biggerCube != null)
+        biggerCube.MatrizRotacaoZBBox(-10);
 
       const float cameraSpeed = 1.5f;
       if (estadoTeclado.IsKeyDown(Keys.Z))
@@ -204,7 +211,7 @@ namespace gcgcg
         Console.WriteLine("Vector2 mousePosition: " + MousePosition);
         Console.WriteLine("Vector2i windowSize: " + ClientSize);
       }
-      if (MouseState.IsButtonDown(MouseButton.Right) && objetoSelecionado != null)
+      if (MouseState.IsButtonDown(MouseButton.Right) && biggerCube != null)
       {
         Console.WriteLine("MouseState.IsButtonDown(MouseButton.Right)");
 
@@ -213,7 +220,7 @@ namespace gcgcg
         Ponto4D mousePonto = new Ponto4D(MousePosition.X, MousePosition.Y);
         Ponto4D sruPonto = Utilitario.NDC_TelaSRU(janelaLargura, janelaAltura, mousePonto);
 
-        objetoSelecionado.PontosAlterar(sruPonto, 0);
+        biggerCube.PontosAlterar(sruPonto, 0);
       }
       if (MouseState.IsButtonReleased(MouseButton.Right))
       {
@@ -254,6 +261,44 @@ namespace gcgcg
       GL.DeleteProgram(_shaderAmarela.Handle);
 
       base.OnUnload();
+    }
+
+    protected void UseTextures()
+    {
+      for (int i = 0; i < textures.Count; i++)
+      {
+        if (i == 0)
+        {
+          textures[i].Use(TextureUnit.Texture0);
+        }
+        else if (i == 1)
+        {
+          textures[i].Use(TextureUnit.Texture1);
+        }
+        else if (i == 2)
+        {
+          textures[i].Use(TextureUnit.Texture2);
+        }
+        else if (i == 3)
+        {
+          textures[i].Use(TextureUnit.Texture3);
+        }
+        else if (i == 4)
+        {
+          textures[i].Use(TextureUnit.Texture4);
+        }
+      }
+    }
+
+    protected void OnLoadSetTexturesOnShader()
+    {
+      string textureName = "";
+
+      for (int i = 0; i < textures.Count; i++)
+      {
+        textureName = "texture" + i;
+        _shaderAmarela.SetInt(textureName, i);
+      }
     }
 
 #if CG_Gizmo
