@@ -23,17 +23,20 @@ namespace gcgcg
     private static Objeto mundo = null;
     private char rotuloNovo = '?';
     private Objeto point;
-    private Objeto biggerCube = null;
+    private Objeto biggerCube;
+    private Objeto smallerCube;
     private List<Texture> textures;
     private readonly float[] _sruEixos =
     {
-      -0.5f,  0.0f,  0.0f, /* X- */      0.5f,  0.0f,  0.0f, /* X+ */
-       0.0f, -0.5f,  0.0f, /* Y- */      0.0f,  0.5f,  0.0f, /* Y+ */
-       0.0f,  0.0f, -0.5f, /* Z- */      0.0f,  0.0f,  0.5f  /* Z+ */
+      -0.5f,  0.0f,  0.0f, /* X- */      0.5f,  0.0f,  0.0f, /* X+ */,
+       0.0f, -0.5f,  0.0f, /* Y- */      0.0f,  0.5f,  0.0f, /* Y+ */,
+       0.0f,  0.0f, -0.5f, /* Z- */      0.0f,  0.0f,  0.5f, /* Z+ */
     };
 
     private int _vertexBufferObject_sruEixos;
     private int _vertexArrayObject_sruEixos;
+
+    private Texture _texture;
 
     private Shader _shaderBranca;
     private Shader _shaderVermelha;
@@ -42,6 +45,7 @@ namespace gcgcg
     private Shader _shaderCiano;
     private Shader _shaderMagenta;
     private Shader _shaderAmarela;
+    private Shader _shaderWithTextures;
 
     private Camera _camera;
 
@@ -50,7 +54,6 @@ namespace gcgcg
     {
       mundo ??= new Objeto(null, ref rotuloNovo); //padrão Singleton
     }
-
 
     protected override void OnLoad()
     {
@@ -68,8 +71,8 @@ namespace gcgcg
       //GL.FrontFace(FrontFaceDirection.Cw);
       //GL.CullFace(CullFaceMode.FrontAndBack);
 
-      GL.Enable(EnableCap.Dither);
-      GL.Enable(EnableCap.Texture2D);
+      //GL.Enable(EnableCap.Dither);
+      //GL.Enable(EnableCap.Texture2D);
 
       #region Cores
       _shaderBranca = new Shader("Shaders/shader.vert", "Shaders/shaderBranca.frag");
@@ -79,6 +82,9 @@ namespace gcgcg
       _shaderCiano = new Shader("Shaders/shader.vert", "Shaders/shaderCiano.frag");
       _shaderMagenta = new Shader("Shaders/shader.vert", "Shaders/shaderMagenta.frag");
       _shaderAmarela = new Shader("Shaders/shader.vert", "Shaders/shaderAmarela.frag");
+      _shaderWithTextures = new Shader("Shaders/shader.vert", "Shaders/shaderWithTextures.frag");
+
+      _shaderWithTextures.Use();
       #endregion
 
       #region Eixos: SRU  
@@ -97,14 +103,29 @@ namespace gcgcg
       point.PrimitivaTamanho = 5;
       #endregion
 
+      var vertexLocation = _shaderWithTextures.GetAttribLocation("aPosition");
+      GL.EnableVertexAttribArray(vertexLocation);
+      GL.VertexAttribPointer(vertexLocation, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
+
+      var textureCoordLocation = _shaderWithTextures.GetAttribLocation("aTextureCoord");
+      GL.EnableVertexAttribArray(textureCoordLocation);
+      GL.VertexAttribPointer(textureCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
+
       #region Object: Bigger Cube
       biggerCube = new Cubo(mundo, ref rotuloNovo, 10);
-      biggerCube.shaderCor = _shaderAmarela;
-      
-      textures = ((Cubo) biggerCube).GetCubeTextures();
-      UseTextures();
+
+      _texture = Texture.LoadFromFile("assets/alexandre.png");
+      _texture.Use(TextureUnit.Texture0);
+
+      biggerCube.shaderCor = _shaderWithTextures;
+      //textures = ((Cubo) biggerCube).GetCubeTextures();
+      //UseTextures();
       //OnLoadSetTexturesOnShader();
       #endregion
+
+      /*#region Object: Smaller Cube
+      smallerCube = new Cubo(mundo, ref rotuloNovo, 2);
+      #endregion*/
       // objetoSelecionado.MatrizEscalaXYZ(0.2, 0.2, 0.2);
 
       _camera = new Camera(Vector3.UnitZ * 5, ClientSize.X / (float) ClientSize.Y);
@@ -116,7 +137,10 @@ namespace gcgcg
 
       GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-      UseTextures();
+      //UseTextures();
+      
+      _texture.Use(TextureUnit.Texture0);
+      _shaderWithTextures.Use();
 
       mundo.Desenhar(new Transformacao4D(), _camera);
 
@@ -259,6 +283,7 @@ namespace gcgcg
       GL.DeleteProgram(_shaderCiano.Handle);
       GL.DeleteProgram(_shaderMagenta.Handle);
       GL.DeleteProgram(_shaderAmarela.Handle);
+      GL.DeleteProgram(_shaderWithTextures.Handle);
 
       base.OnUnload();
     }
@@ -297,7 +322,7 @@ namespace gcgcg
       for (int i = 0; i < textures.Count; i++)
       {
         textureName = "texture" + i;
-        _shaderAmarela.SetInt(textureName, i);
+        _shaderWithTextures.SetInt(textureName, i);
       }
     }
 

@@ -266,20 +266,6 @@ namespace gcgcg
         temporaryChildPolygon.PontosAdicionar(getMousePoint());
         temporaryChildPolygon.ObjetoAtualizar();
       }
-
-      // if (MouseState.IsButtonPressed(MouseButton.Right) && isEnterPressedBefore == true)
-      // {
-      //   List<Ponto4D> poligonPointsCache = [getMousePoint()];
-      //   listPoligonos.Add(new Poligono(mundo, ref rotuloAtual, poligonPointsCache));
-      //   objetoSelecionado = listPoligonos.Last();
-      //   isEnterPressedBefore = false;
-      // }
-
-      // if (MouseState.IsButtonPressed(MouseButton.Right) && isEnterPressedBefore == false)
-      // {
-      //   objetoSelecionado.PontosAdicionar(getMousePoint());
-      //   objetoSelecionado.ObjetoAtualizar();
-      // }
       #endregion
     }
 
