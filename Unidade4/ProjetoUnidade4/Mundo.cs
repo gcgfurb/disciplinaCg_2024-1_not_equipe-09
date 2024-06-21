@@ -35,8 +35,30 @@ namespace gcgcg
     private int _vertexBufferObject_sruEixos;
     private int _vertexArrayObject_sruEixos;
 
-    private readonly List<Texture> _textures;
-    private Texture _texture;
+    private List<Texture> _textures;
+    private List<float[]> _faceVertices;
+    private List<uint[]> _faceIndices;
+    private readonly List<Ponto4D> _rectangleFirstPoints = new List<Ponto4D> {
+      new Ponto4D(-0.3, -0.3, 0.3),
+      new Ponto4D(-0.3, -0.3, -0.3),
+      new Ponto4D(-0.3, 0.3, -0.3),
+      new Ponto4D(-0.3, -0.3, -0.3),
+      new Ponto4D(0.3, -0.3, -0.3),
+      new Ponto4D(-0.3, -0.3, -0.3)
+    };
+    private readonly List<Ponto4D> _rectangleSecondPoints = new List<Ponto4D> {
+      new Ponto4D(0.3, 0.3, 0.3),
+      new Ponto4D(0.3, 0.3, -0.3),
+      new Ponto4D(0.3, 0.3, 0.3),
+      new Ponto4D(0.3, -0.3, 0.3),
+      new Ponto4D(0.3, 0.3, 0.3),
+      new Ponto4D(-0.3, 0.3, 0.3)
+    };
+
+    private int _vertexBufferObject_texture;
+    private int _vertexArrayObject_texture;
+    private int _elementBufferObject_texture;
+    //private Texture _texture;
 
     private Shader _shaderBranca;
     private Shader _shaderVermelha;
@@ -46,7 +68,6 @@ namespace gcgcg
     private Shader _shaderMagenta;
     private Shader _shaderAmarela;
     private Shader _shaderWithTextures;
-
     private Camera _camera;
 
     public Mundo(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
@@ -67,10 +88,9 @@ namespace gcgcg
       GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
       GL.Enable(EnableCap.DepthTest);       // Ativar teste de profundidade
-      GL.Enable(EnableCap.CullFace);     // Desenha os dois lados da face
+      //GL.Enable(EnableCap.CullFace);     // Desenha os dois lados da face
       //GL.FrontFace(FrontFaceDirection.Cw);
       //GL.CullFace(CullFaceMode.FrontAndBack);
-      GL.Enable(EnableCap.Texture2D);
 
       #region Cores
       _shaderBranca = new Shader("Shaders/shader.vert", "Shaders/shaderBranca.frag");
@@ -80,9 +100,6 @@ namespace gcgcg
       _shaderCiano = new Shader("Shaders/shader.vert", "Shaders/shaderCiano.frag");
       _shaderMagenta = new Shader("Shaders/shader.vert", "Shaders/shaderMagenta.frag");
       _shaderAmarela = new Shader("Shaders/shader.vert", "Shaders/shaderAmarela.frag");
-      _shaderWithTextures = new Shader("Shaders/shader.vert", "Shaders/shaderWithTextures.frag");
-
-      _shaderWithTextures.Use();
       #endregion
 
       #region Eixos: SRU  
@@ -101,24 +118,14 @@ namespace gcgcg
       _point.PrimitivaTamanho = 5;
       #endregion
 
-      var vertexLocation = _shaderWithTextures.GetAttribLocation("aPosition");
-      GL.EnableVertexAttribArray(vertexLocation);
-      GL.VertexAttribPointer(vertexLocation, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
-
-      var textureCoordLocation = _shaderWithTextures.GetAttribLocation("aTextureCoord");
-      GL.EnableVertexAttribArray(textureCoordLocation);
-      GL.VertexAttribPointer(textureCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
-
       #region Object: Bigger Cube
       _biggerCube = new Cubo(mundo, ref rotuloNovo, 10);
+      _biggerCube.shaderCor = _shaderAmarela;
+      _textures = ((Cubo) _biggerCube).GetCubeTextures();
+      _faceVertices = ((Cubo) _biggerCube).GetFaceVertices();
+      _faceIndices = ((Cubo) _biggerCube).GetFaceIndices();
 
-      _texture = Texture.LoadFromFile("assets/alexandre.png");
-      _texture.Use(TextureUnit.Texture0);
-
-      _biggerCube.shaderCor = _shaderWithTextures;
-      //_textures = ((Cubo) biggerCube).GetCubeTextures();
-      //UseTextures();
-      //OnLoadSetTexturesOnShader();
+      OnLoadUseTextures();
       #endregion
 
       /*#region Object: Smaller Cube
@@ -126,7 +133,7 @@ namespace gcgcg
       #endregion*/
       // objetoSelecionado.MatrizEscalaXYZ(0.2, 0.2, 0.2);
 
-      _camera = new Camera(Vector3.UnitZ * 5, ClientSize.X / (float) ClientSize.Y);
+      _camera = new Camera(Vector3.UnitZ * 1.5f, ClientSize.X / (float) ClientSize.Y);
     }
 
     protected override void OnRenderFrame(FrameEventArgs e)
@@ -134,14 +141,9 @@ namespace gcgcg
       base.OnRenderFrame(e);
 
       GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-      GL.BindVertexArray(_vertexArrayObject_sruEixos);
-
-      //UseTextures();
-
-      _texture.Use(TextureUnit.Texture0);
-      _shaderWithTextures.Use();
-
       mundo.Desenhar(new Transformacao4D(), _camera);
+
+      OnRenderFrameUseTextures();
 
 #if CG_Gizmo      
       Gizmo_Sru3D();
@@ -287,41 +289,49 @@ namespace gcgcg
       base.OnUnload();
     }
 
-    protected void UseTextures()
+    protected void OnLoadUseTextures()
     {
       for (int i = 0; i < _textures.Count; i++)
       {
-        if (i == 0)
-        {
-          _textures[i].Use(TextureUnit.Texture0);
-        }
-        else if (i == 1)
-        {
-          _textures[i].Use(TextureUnit.Texture1);
-        }
-        else if (i == 2)
-        {
-          _textures[i].Use(TextureUnit.Texture2);
-        }
-        else if (i == 3)
-        {
-          _textures[i].Use(TextureUnit.Texture3);
-        }
-        else if (i == 4)
-        {
-          _textures[i].Use(TextureUnit.Texture4);
-        }
+        GL.Enable(EnableCap.Texture2D);
+        _vertexArrayObject_texture = GL.GenVertexArray();
+        GL.BindVertexArray(_vertexArrayObject_texture);
+
+        _vertexBufferObject_texture = GL.GenBuffer();
+        GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject_texture);
+        GL.BufferData(BufferTarget.ArrayBuffer, _faceVertices[i].Length * sizeof(float), _faceVertices[i], BufferUsageHint.StaticDraw);
+
+        _elementBufferObject_texture = GL.GenBuffer();
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, _elementBufferObject_texture);
+        GL.BufferData(BufferTarget.ElementArrayBuffer, _faceIndices[i].Length * sizeof(uint), _faceIndices[i], BufferUsageHint.StaticDraw);
+
+        _shaderWithTextures = new Shader("Shaders/shaderWithTextures.vert", "Shaders/shaderWithTextures.frag");
+        _shaderWithTextures.Use();
+
+        var vertexLocation = _shaderWithTextures.GetAttribLocation("aPosition");
+        GL.EnableVertexAttribArray(vertexLocation);
+        GL.VertexAttribPointer(vertexLocation, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
+
+        var texCoordLocation = _shaderWithTextures.GetAttribLocation("aTexCoord");
+        GL.EnableVertexAttribArray(texCoordLocation);
+        GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
+
+        _textures[i].Use(TextureUnit.Texture0);
+
+        Retangulo faceRectangle = new Retangulo(_biggerCube, ref rotuloNovo, _rectangleFirstPoints[i], _rectangleSecondPoints[i], true);
+        faceRectangle.shaderCor = _shaderWithTextures;
       }
     }
 
-    protected void OnLoadSetTexturesOnShader()
+    protected void OnRenderFrameUseTextures()
     {
-      string textureName = "";
-
       for (int i = 0; i < _textures.Count; i++)
       {
-        textureName = "texture" + i;
-        _shaderWithTextures.SetInt(textureName, i);
+        GL.BindVertexArray(_vertexArrayObject_texture);
+        _textures[i].Use(TextureUnit.Texture0);
+        _shaderWithTextures.Use();
+
+        GL.DrawElements(PrimitiveType.Triangles, _faceIndices[i].Length, DrawElementsType.UnsignedInt, 0);
       }
     }
 

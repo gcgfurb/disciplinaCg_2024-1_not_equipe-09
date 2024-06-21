@@ -156,6 +156,11 @@ namespace gcgcg
       ObjetoAtualizar();
     }
 
+    public List<Ponto4D> GetPontosLista()
+    {
+      return pontosLista;
+    }
+
     #endregion
 
     #region Objeto: Grafo de Cena
