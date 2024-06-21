@@ -39,26 +39,46 @@ namespace gcgcg
     private List<float[]> _faceVertices;
     private List<uint[]> _faceIndices;
     private readonly List<Ponto4D> _rectangleFirstPoints = new List<Ponto4D> {
-      new Ponto4D(-0.3, -0.3, 0.3),
-      new Ponto4D(-0.3, -0.3, -0.3),
-      new Ponto4D(-0.3, 0.3, -0.3),
-      new Ponto4D(-0.3, -0.3, -0.3),
-      new Ponto4D(0.3, -0.3, -0.3),
-      new Ponto4D(-0.3, -0.3, -0.3)
+      new Ponto4D(-1.0, -1.0, 1.0),
+      new Ponto4D(-1.0, -1.0, -1.0),
+      new Ponto4D(-1.0, 1.0, -1.0),
+      new Ponto4D(-1.0, -1.0, -1.0),
+      new Ponto4D(1.0, -1.0, -1.0),
+      new Ponto4D(-1.0, -1.0, -1.0)
     };
     private readonly List<Ponto4D> _rectangleSecondPoints = new List<Ponto4D> {
-      new Ponto4D(0.3, 0.3, 0.3),
-      new Ponto4D(0.3, 0.3, -0.3),
-      new Ponto4D(0.3, 0.3, 0.3),
-      new Ponto4D(0.3, -0.3, 0.3),
-      new Ponto4D(0.3, 0.3, 0.3),
-      new Ponto4D(-0.3, 0.3, 0.3)
+      new Ponto4D(1.0, 1.0, 1.0),
+      new Ponto4D(1.0, 1.0, -1.0),
+      new Ponto4D(1.0, 1.0, 1.0),
+      new Ponto4D(1.0, -1.0, 1.0),
+      new Ponto4D(1.0, 1.0, 1.0),
+      new Ponto4D(-1.0, 1.0, 1.0)
     };
+    private List<Shader> _shadersWithTextures;
+    private List<int> _vertexBufferObjects_texture;
+    private List<int> _vertexArrayObjects_texture;
+    private List<int> _elementBufferObjects_texture;
 
-    private int _vertexBufferObject_texture;
-    private int _vertexArrayObject_texture;
-    private int _elementBufferObject_texture;
-    //private Texture _texture;
+    private readonly int _vertexBufferObject_texture_frontFace;
+    private readonly int _vertexBufferObject_texture_backFace;
+    private readonly int _vertexBufferObject_texture_topFace;
+    private readonly int _vertexBufferObject_texture_bottomFace;
+    private readonly int _vertexBufferObject_texture_rightFace;
+    private readonly int _vertexBufferObject_texture_leftFace;
+
+    private readonly int _vertexArrayObject_texture_frontFace;
+    private readonly int _vertexArrayObject_texture_backFace;
+    private readonly int _vertexArrayObject_texture_topFace;
+    private readonly int _vertexArrayObject_texture_bottomFace;
+    private readonly int _vertexArrayObject_texture_rightFace;
+    private readonly int _vertexArrayObject_texture_leftFace;
+
+    private readonly int _elementBufferObject_texture_frontFace;
+    private readonly int _elementBufferObject_texture_backFace;
+    private readonly int _elementBufferObject_texture_topFace;
+    private readonly int _elementBufferObject_texture_bottomFace;
+    private readonly int _elementBufferObject_texture_rightFace;
+    private readonly int _elementBufferObject_texture_leftFace;
 
     private Shader _shaderBranca;
     private Shader _shaderVermelha;
@@ -67,7 +87,13 @@ namespace gcgcg
     private Shader _shaderCiano;
     private Shader _shaderMagenta;
     private Shader _shaderAmarela;
-    private Shader _shaderWithTextures;
+    private Shader _shaderFrontFaceTexture;
+    private Shader _shaderBackFaceTexture;
+    private Shader _shaderTopFaceTexture;
+    private Shader _shaderBottomFaceTexture;
+    private Shader _shaderRightFaceTexture;
+    private Shader _shaderLeftFaceTexture;
+
     private Camera _camera;
 
     public Mundo(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
@@ -100,6 +126,12 @@ namespace gcgcg
       _shaderCiano = new Shader("Shaders/shader.vert", "Shaders/shaderCiano.frag");
       _shaderMagenta = new Shader("Shaders/shader.vert", "Shaders/shaderMagenta.frag");
       _shaderAmarela = new Shader("Shaders/shader.vert", "Shaders/shaderAmarela.frag");
+      _shaderFrontFaceTexture = new Shader("Shaders/shaderWithTextures.vert", "Shaders/shaderWithTextures.frag");
+      _shaderBackFaceTexture = new Shader("Shaders/shaderWithTextures.vert", "Shaders/shaderWithTextures.frag");
+      _shaderTopFaceTexture = new Shader("Shaders/shaderWithTextures.vert", "Shaders/shaderWithTextures.frag");
+      _shaderBottomFaceTexture = new Shader("Shaders/shaderWithTextures.vert", "Shaders/shaderWithTextures.frag");
+      _shaderRightFaceTexture = new Shader("Shaders/shaderWithTextures.vert", "Shaders/shaderWithTextures.frag");
+      _shaderLeftFaceTexture = new Shader("Shaders/shaderWithTextures.vert", "Shaders/shaderWithTextures.frag");
       #endregion
 
       #region Eixos: SRU  
@@ -121,9 +153,45 @@ namespace gcgcg
       #region Object: Bigger Cube
       _biggerCube = new Cubo(mundo, ref rotuloNovo, 10);
       _biggerCube.shaderCor = _shaderAmarela;
-      _textures = ((Cubo) _biggerCube).GetCubeTextures();
+      _textures = Cubo.GetTextures();
       _faceVertices = ((Cubo) _biggerCube).GetFaceVertices();
       _faceIndices = ((Cubo) _biggerCube).GetFaceIndices();
+
+      _vertexArrayObjects_texture = [
+        _vertexArrayObject_texture_frontFace,
+        _vertexArrayObject_texture_backFace,
+        _vertexArrayObject_texture_topFace,
+        _vertexArrayObject_texture_bottomFace,
+        _vertexArrayObject_texture_rightFace,
+        _vertexArrayObject_texture_leftFace
+      ];
+
+      _vertexBufferObjects_texture = [
+        _vertexBufferObject_texture_frontFace,
+        _vertexBufferObject_texture_backFace,
+        _vertexBufferObject_texture_topFace,
+        _vertexBufferObject_texture_bottomFace,
+        _vertexBufferObject_texture_rightFace,
+        _vertexBufferObject_texture_leftFace
+      ];
+
+      _elementBufferObjects_texture = [
+        _elementBufferObject_texture_frontFace,
+        _elementBufferObject_texture_backFace,
+        _elementBufferObject_texture_topFace,
+        _elementBufferObject_texture_bottomFace,
+        _elementBufferObject_texture_rightFace,
+        _elementBufferObject_texture_leftFace
+      ];
+
+      _shadersWithTextures = [
+        _shaderFrontFaceTexture,
+        _shaderBackFaceTexture,
+        _shaderTopFaceTexture,
+        _shaderBottomFaceTexture,
+        _shaderRightFaceTexture,
+        _shaderLeftFaceTexture
+      ];
 
       OnLoadUseTextures();
       #endregion
@@ -133,7 +201,7 @@ namespace gcgcg
       #endregion*/
       // objetoSelecionado.MatrizEscalaXYZ(0.2, 0.2, 0.2);
 
-      _camera = new Camera(Vector3.UnitZ * 1.5f, ClientSize.X / (float) ClientSize.Y);
+      _camera = new Camera(Vector3.UnitZ * 5, ClientSize.X / (float) ClientSize.Y);
     }
 
     protected override void OnRenderFrame(FrameEventArgs e)
@@ -284,7 +352,12 @@ namespace gcgcg
       GL.DeleteProgram(_shaderCiano.Handle);
       GL.DeleteProgram(_shaderMagenta.Handle);
       GL.DeleteProgram(_shaderAmarela.Handle);
-      GL.DeleteProgram(_shaderWithTextures.Handle);
+      GL.DeleteProgram(_shaderFrontFaceTexture.Handle);
+      GL.DeleteProgram(_shaderBackFaceTexture.Handle);
+      GL.DeleteProgram(_shaderTopFaceTexture.Handle);
+      GL.DeleteProgram(_shaderBottomFaceTexture.Handle);
+      GL.DeleteProgram(_shaderRightFaceTexture.Handle);
+      GL.DeleteProgram(_shaderLeftFaceTexture.Handle);
 
       base.OnUnload();
     }
@@ -294,32 +367,31 @@ namespace gcgcg
       for (int i = 0; i < _textures.Count; i++)
       {
         GL.Enable(EnableCap.Texture2D);
-        _vertexArrayObject_texture = GL.GenVertexArray();
-        GL.BindVertexArray(_vertexArrayObject_texture);
+        _vertexArrayObjects_texture[i] = GL.GenVertexArray();
+        GL.BindVertexArray(_vertexArrayObjects_texture[i]);
 
-        _vertexBufferObject_texture = GL.GenBuffer();
-        GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject_texture);
+        _vertexBufferObjects_texture[i] = GL.GenBuffer();
+        GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObjects_texture[i]);
         GL.BufferData(BufferTarget.ArrayBuffer, _faceVertices[i].Length * sizeof(float), _faceVertices[i], BufferUsageHint.StaticDraw);
 
-        _elementBufferObject_texture = GL.GenBuffer();
-        GL.BindBuffer(BufferTarget.ElementArrayBuffer, _elementBufferObject_texture);
+        _elementBufferObjects_texture[i] = GL.GenBuffer();
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, _elementBufferObjects_texture[i]);
         GL.BufferData(BufferTarget.ElementArrayBuffer, _faceIndices[i].Length * sizeof(uint), _faceIndices[i], BufferUsageHint.StaticDraw);
 
-        _shaderWithTextures = new Shader("Shaders/shaderWithTextures.vert", "Shaders/shaderWithTextures.frag");
-        _shaderWithTextures.Use();
+        _shadersWithTextures[i].Use();
 
-        var vertexLocation = _shaderWithTextures.GetAttribLocation("aPosition");
+        var vertexLocation = _shadersWithTextures[i].GetAttribLocation("aPosition");
         GL.EnableVertexAttribArray(vertexLocation);
         GL.VertexAttribPointer(vertexLocation, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
 
-        var texCoordLocation = _shaderWithTextures.GetAttribLocation("aTexCoord");
+        var texCoordLocation = _shadersWithTextures[i].GetAttribLocation("aTexCoord");
         GL.EnableVertexAttribArray(texCoordLocation);
         GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
 
         _textures[i].Use(TextureUnit.Texture0);
 
         Retangulo faceRectangle = new Retangulo(_biggerCube, ref rotuloNovo, _rectangleFirstPoints[i], _rectangleSecondPoints[i], true);
-        faceRectangle.shaderCor = _shaderWithTextures;
+        faceRectangle.shaderCor = _shadersWithTextures[i];
       }
     }
 
@@ -327,9 +399,9 @@ namespace gcgcg
     {
       for (int i = 0; i < _textures.Count; i++)
       {
-        GL.BindVertexArray(_vertexArrayObject_texture);
+        GL.BindVertexArray(_vertexArrayObjects_texture[i]);
         _textures[i].Use(TextureUnit.Texture0);
-        _shaderWithTextures.Use();
+        _shadersWithTextures[i].Use();
 
         GL.DrawElements(PrimitiveType.Triangles, _faceIndices[i].Length, DrawElementsType.UnsignedInt, 0);
       }
