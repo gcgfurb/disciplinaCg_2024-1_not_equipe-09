@@ -345,6 +345,10 @@ namespace gcgcg
       GL.DeleteBuffer(_vertexBufferObject_sruEixos);
       GL.DeleteVertexArray(_vertexArrayObject_sruEixos);
 
+      OnUnloadDeleteArrays();
+      OnUnloadDeleteBuffers();
+      OnUnloadDeleteElementBuffers();
+
       GL.DeleteProgram(_shaderBranca.Handle);
       GL.DeleteProgram(_shaderVermelha.Handle);
       GL.DeleteProgram(_shaderVerde.Handle);
@@ -404,6 +408,30 @@ namespace gcgcg
         _shadersWithTextures[i].Use();
 
         GL.DrawElements(PrimitiveType.Triangles, _faceIndices[i].Length, DrawElementsType.UnsignedInt, 0);
+      }
+    }
+
+    protected void OnUnloadDeleteArrays()
+    {
+      foreach (int _vertexArrayObject_texture in _vertexArrayObjects_texture)
+      {
+        GL.DeleteVertexArray(_vertexArrayObject_texture);
+      }
+    }
+
+    protected void OnUnloadDeleteBuffers()
+    {
+      foreach (int _vertexBufferObject_texture in _vertexBufferObjects_texture)
+      {
+        GL.DeleteBuffer(_vertexBufferObject_texture);
+      }
+    }
+
+    protected void OnUnloadDeleteElementBuffers()
+    {
+      foreach (int _elementBufferObject_texture in _elementBufferObjects_texture)
+      {
+        GL.DeleteBuffer(_elementBufferObject_texture);
       }
     }
 
