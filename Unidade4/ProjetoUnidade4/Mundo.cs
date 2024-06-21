@@ -59,26 +59,26 @@ namespace gcgcg
     private List<int> _vertexArrayObjects_texture;
     private List<int> _elementBufferObjects_texture;
 
-    private readonly int _vertexBufferObject_texture_frontFace;
-    private readonly int _vertexBufferObject_texture_backFace;
-    private readonly int _vertexBufferObject_texture_topFace;
-    private readonly int _vertexBufferObject_texture_bottomFace;
-    private readonly int _vertexBufferObject_texture_rightFace;
-    private readonly int _vertexBufferObject_texture_leftFace;
+    private readonly int _vertexBufferObject_texture_frontFace = 0;
+    private readonly int _vertexBufferObject_texture_backFace = 0;
+    private readonly int _vertexBufferObject_texture_topFace = 0;
+    private readonly int _vertexBufferObject_texture_bottomFace = 0;
+    private readonly int _vertexBufferObject_texture_rightFace = 0;
+    private readonly int _vertexBufferObject_texture_leftFace = 0;
 
-    private readonly int _vertexArrayObject_texture_frontFace;
-    private readonly int _vertexArrayObject_texture_backFace;
-    private readonly int _vertexArrayObject_texture_topFace;
-    private readonly int _vertexArrayObject_texture_bottomFace;
-    private readonly int _vertexArrayObject_texture_rightFace;
-    private readonly int _vertexArrayObject_texture_leftFace;
+    private readonly int _vertexArrayObject_texture_frontFace = 0;
+    private readonly int _vertexArrayObject_texture_backFace = 0;
+    private readonly int _vertexArrayObject_texture_topFace = 0;
+    private readonly int _vertexArrayObject_texture_bottomFace = 0;
+    private readonly int _vertexArrayObject_texture_rightFace = 0;
+    private readonly int _vertexArrayObject_texture_leftFace = 0;
 
-    private readonly int _elementBufferObject_texture_frontFace;
-    private readonly int _elementBufferObject_texture_backFace;
-    private readonly int _elementBufferObject_texture_topFace;
-    private readonly int _elementBufferObject_texture_bottomFace;
-    private readonly int _elementBufferObject_texture_rightFace;
-    private readonly int _elementBufferObject_texture_leftFace;
+    private readonly int _elementBufferObject_texture_frontFace = 0;
+    private readonly int _elementBufferObject_texture_backFace = 0;
+    private readonly int _elementBufferObject_texture_topFace = 0;
+    private readonly int _elementBufferObject_texture_bottomFace = 0;
+    private readonly int _elementBufferObject_texture_rightFace = 0;
+    private readonly int _elementBufferObject_texture_leftFace = 0;
 
     private Shader _shaderBranca;
     private Shader _shaderVermelha;

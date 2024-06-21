@@ -185,21 +185,21 @@ namespace gcgcg
 
     public static List<Texture> GetTextures()
     {
-      List<Texture> textures = new List<Texture>();
+      List<Texture> textures = [];
       Texture alexandreTexture = Texture.LoadFromFile("assets/alexandre.png");
-      Texture brunoTexture = Texture.LoadFromFile("assets/container.png");
+      Texture brunoTexture = Texture.LoadFromFile("assets/bruno.png");
       Texture joshuaTexture = Texture.LoadFromFile("assets/joshua.png");
       Texture leonardoTexture = Texture.LoadFromFile("assets/leonardo.png");
       Texture lorhanTexture = Texture.LoadFromFile("assets/lorhan.png");
-      Texture containerTexture = Texture.LoadFromFile("assets/bruno.png");
+      Texture containerTexture = Texture.LoadFromFile("assets/container.png");
 
       textures.AddRange([
-        alexandreTexture,
-        brunoTexture,
+        lorhanTexture,
+        containerTexture,
         joshuaTexture,
         leonardoTexture,
-        lorhanTexture,
-        containerTexture
+        alexandreTexture,
+        brunoTexture
       ]);
       return textures;
     }
