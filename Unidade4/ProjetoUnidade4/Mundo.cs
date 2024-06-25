@@ -24,14 +24,17 @@ namespace gcgcg
     private char rotuloNovo = '?';
     private Objeto _point;
     private Objeto _biggerCube;
-    //private Objeto _smallerCube;
+    private Objeto _smallerCube;
+    private readonly float _smallerCubeOrbitationRadius = 0.050f;
+    private float _smallerCubeOrbitationAngle = 1.0f;
+    private float _timeAccumulator;
+
     private readonly float[] _sruEixos =
     [
       -0.5f,  0.0f,  0.0f, /* X- */      0.5f,  0.0f,  0.0f, /* X+ */
        0.0f, -0.5f,  0.0f, /* Y- */      0.0f,  0.5f,  0.0f, /* Y+ */
        0.0f,  0.0f, -0.5f, /* Z- */      0.0f,  0.0f,  0.5f  /* Z+ */
     ];
-
     private int _vertexBufferObject_sruEixos;
     private int _vertexArrayObject_sruEixos;
 
@@ -151,7 +154,7 @@ namespace gcgcg
       #endregion
 
       #region Object: Bigger Cube
-      _biggerCube = new Cubo(mundo, ref rotuloNovo, 10);
+      _biggerCube = new Cubo(mundo, ref rotuloNovo, 0.0f);
       _biggerCube.shaderCor = _shaderAmarela;
       _textures = Cubo.GetTextures();
       _faceVertices = ((Cubo) _biggerCube).GetFaceVertices();
@@ -196,10 +199,11 @@ namespace gcgcg
       OnLoadUseTextures();
       #endregion
 
-      /*#region Object: Smaller Cube
-      _smallerCube = new Cubo(mundo, ref rotuloNovo, 2);
-      #endregion*/
-      // objetoSelecionado.MatrizEscalaXYZ(0.2, 0.2, 0.2);
+      #region Object: Smaller Cube
+      _smallerCube = new Cubo(mundo, ref rotuloNovo, 0.8f);
+      _smallerCube.shaderCor = _shaderCiano;
+      _smallerCube.MatrizTranslacaoXYZ(0, -2.5, 0);
+      #endregion
 
       _camera = new Camera(Vector3.UnitZ * 5, ClientSize.X / (float) ClientSize.Y);
       _angleX = -90;
@@ -224,6 +228,7 @@ namespace gcgcg
     protected override void OnUpdateFrame(FrameEventArgs e)
     {
       base.OnUpdateFrame(e);
+      OnUpdateFrameOrbitateSmallerCube(e);
 
       const float cameraSpeed = 2.5f;
       const float cameraSensivity = 0.020f;
@@ -421,6 +426,21 @@ namespace gcgcg
         _shadersWithTextures[i].Use();
 
         GL.DrawElements(PrimitiveType.Triangles, _faceIndices[i].Length, DrawElementsType.UnsignedInt, 0);
+      }
+    }
+
+    protected void OnUpdateFrameOrbitateSmallerCube(FrameEventArgs frameEventArgs)
+    {
+      float updateFrameDelay = 0.030f;
+
+      _timeAccumulator += (float) frameEventArgs.Time;
+
+      if (_timeAccumulator >= updateFrameDelay) 
+      {
+        Ponto4D smallerCubeOrbitationPoint = Matematica.GerarPtosCirculo(_smallerCubeOrbitationAngle, _smallerCubeOrbitationRadius);
+        _smallerCube.MatrizTranslacaoXYZ(smallerCubeOrbitationPoint.X, smallerCubeOrbitationPoint.Y, smallerCubeOrbitationPoint.Z);
+        _smallerCubeOrbitationAngle += 1.0f;
+        _timeAccumulator = 0.0f;
       }
     }
 

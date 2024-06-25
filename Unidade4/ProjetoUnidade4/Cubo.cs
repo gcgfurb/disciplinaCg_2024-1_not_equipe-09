@@ -3,8 +3,6 @@
 #define CG_Debug
 using CG_Biblioteca;
 using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
-using System.Drawing;
 using System.Collections.Generic;
 
 namespace gcgcg
@@ -106,21 +104,21 @@ namespace gcgcg
       3, 0, 1
     ];
 
-    public Cubo(Objeto _paiRef, ref char _rotulo, int primitiveSize) : base(_paiRef, ref _rotulo)
+    public Cubo(Objeto _paiRef, ref char _rotulo, float decreaseSizeBy) : base(_paiRef, ref _rotulo)
     {
       PrimitivaTipo = PrimitiveType.TriangleFan;
-      PrimitivaTamanho = primitiveSize;
+      float cubeSize = 1.0f - decreaseSizeBy;
 
       _vertices =
       [
-        new Ponto4D(-1.0f, -1.0f,  1.0f),
-        new Ponto4D( 1.0f, -1.0f,  1.0f),
-        new Ponto4D( 1.0f,  1.0f,  1.0f),
-        new Ponto4D(-1.0f,  1.0f,  1.0f),
-        new Ponto4D(-1.0f, -1.0f, -1.0f),
-        new Ponto4D( 1.0f, -1.0f, -1.0f),
-        new Ponto4D( 1.0f,  1.0f, -1.0f),
-        new Ponto4D(-1.0f,  1.0f, -1.0f)
+        new Ponto4D(-cubeSize, -cubeSize, cubeSize),
+        new Ponto4D(cubeSize, -cubeSize, cubeSize),
+        new Ponto4D(cubeSize, cubeSize, cubeSize),
+        new Ponto4D(-cubeSize, cubeSize, cubeSize),
+        new Ponto4D(-cubeSize, -cubeSize, -cubeSize),
+        new Ponto4D(cubeSize, -cubeSize, -cubeSize),
+        new Ponto4D(cubeSize, cubeSize, -cubeSize),
+        new Ponto4D(-cubeSize, cubeSize, -cubeSize)
       ];
 
       // // 0, 1, 2, 3 Face da frente
@@ -176,11 +174,6 @@ namespace gcgcg
     public Ponto4D[] GetVertices()
     {
       return this._vertices;
-    }
-
-    public static int ColorToRgba32(Color c)
-    {
-      return (int)((c.A << 24) | (c.B << 16) | (c.G << 8) | c.R);
     }
 
     public static List<Texture> GetTextures()
