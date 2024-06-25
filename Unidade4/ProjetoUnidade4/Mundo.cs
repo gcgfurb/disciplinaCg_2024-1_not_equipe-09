@@ -95,6 +95,10 @@ namespace gcgcg
     private Shader _shaderLeftFaceTexture;
 
     private Camera _camera;
+    private float _angleX;
+    private float _angleY;
+    private float _previousMouseStateX;
+    private float _previousMouseStateY;
 
     public Mundo(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
            : base(gameWindowSettings, nativeWindowSettings)
@@ -112,11 +116,7 @@ namespace gcgcg
 #endif
 
       GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-      GL.Enable(EnableCap.DepthTest);       // Ativar teste de profundidade
-      //GL.Enable(EnableCap.CullFace);     // Desenha os dois lados da face
-      //GL.FrontFace(FrontFaceDirection.Cw);
-      //GL.CullFace(CullFaceMode.FrontAndBack);
+      GL.Enable(EnableCap.DepthTest);
 
       #region Cores
       _shaderBranca = new Shader("Shaders/shader.vert", "Shaders/shaderBranca.frag");
@@ -202,6 +202,8 @@ namespace gcgcg
       // objetoSelecionado.MatrizEscalaXYZ(0.2, 0.2, 0.2);
 
       _camera = new Camera(Vector3.UnitZ * 5, ClientSize.X / (float) ClientSize.Y);
+      _angleX = -90;
+      _angleY = 0;
     }
 
     protected override void OnRenderFrame(FrameEventArgs e)
@@ -223,9 +225,12 @@ namespace gcgcg
     {
       base.OnUpdateFrame(e);
 
+      const float cameraSpeed = 2.5f;
+      const float cameraSensivity = 0.020f;
+      var estadoTeclado = KeyboardState;
+
       // ☞ 396c2670-8ce0-4aff-86da-0f58cd8dcfdc   TODO: forma otimizada para teclado.
       #region Teclado
-      var estadoTeclado = KeyboardState;
       if (estadoTeclado.IsKeyDown(Keys.Escape))
         Close();
       if (estadoTeclado.IsKeyPressed(Keys.Space))
@@ -245,13 +250,13 @@ namespace gcgcg
       if (estadoTeclado.IsKeyPressed(Keys.I) && _biggerCube != null)
         _biggerCube.MatrizAtribuirIdentidade();
       if (estadoTeclado.IsKeyPressed(Keys.Left) && _biggerCube != null)
-        _biggerCube.MatrizTranslacaoXYZ(-0.05, 0, 0);
+        _biggerCube.MatrizTranslacaoXYZ(-0.3, 0, 0);
       if (estadoTeclado.IsKeyPressed(Keys.Right) && _biggerCube != null)
-        _biggerCube.MatrizTranslacaoXYZ(0.05, 0, 0);
+        _biggerCube.MatrizTranslacaoXYZ(0.3, 0, 0);
       if (estadoTeclado.IsKeyPressed(Keys.Up) && _biggerCube != null)
-        _biggerCube.MatrizTranslacaoXYZ(0, 0.05, 0);
+        _biggerCube.MatrizTranslacaoXYZ(0, 0.3, 0);
       if (estadoTeclado.IsKeyPressed(Keys.Down) && _biggerCube != null)
-        _biggerCube.MatrizTranslacaoXYZ(0, -0.05, 0);
+        _biggerCube.MatrizTranslacaoXYZ(0, -0.3, 0);
       if (estadoTeclado.IsKeyPressed(Keys.O) && _biggerCube != null)
         _biggerCube.MatrizTranslacaoXYZ(0, 0, 0.05);
       if (estadoTeclado.IsKeyPressed(Keys.L) && _biggerCube != null)
@@ -273,7 +278,6 @@ namespace gcgcg
       if (estadoTeclado.IsKeyPressed(Keys.D4) && _biggerCube != null)
         _biggerCube.MatrizRotacaoZBBox(-10);
 
-      const float cameraSpeed = 1.5f;
       if (estadoTeclado.IsKeyDown(Keys.Z))
         _camera.Position = Vector3.UnitZ * 5;
       if (estadoTeclado.IsKeyDown(Keys.W))
@@ -295,15 +299,18 @@ namespace gcgcg
 
       #endregion
 
-      #region  Mouse
-
+      #region Mouse
       if (MouseState.IsButtonPressed(MouseButton.Left))
       {
-        Console.WriteLine("MouseState.IsButtonPressed(MouseButton.Left)");
-        Console.WriteLine("__ Valores do Espaço de Tela");
-        Console.WriteLine("Vector2 mousePosition: " + MousePosition);
-        Console.WriteLine("Vector2i windowSize: " + ClientSize);
+        _previousMouseStateX = MouseState.X;
+        _previousMouseStateY = MouseState.Y;
       }
+
+      if (MouseState.IsButtonDown(MouseButton.Left))
+      {
+        OnUpdateFrameReloadCameraPerspective(cameraSensivity, MouseState.X, MouseState.Y);
+      }
+
       if (MouseState.IsButtonDown(MouseButton.Right) && _biggerCube != null)
       {
         Console.WriteLine("MouseState.IsButtonDown(MouseButton.Right)");
@@ -315,13 +322,18 @@ namespace gcgcg
 
         _biggerCube.PontosAlterar(sruPonto, 0);
       }
+
       if (MouseState.IsButtonReleased(MouseButton.Right))
       {
         Console.WriteLine("MouseState.IsButtonReleased(MouseButton.Right)");
       }
-
       #endregion
+    }
 
+    protected override void OnMouseWheel(MouseWheelEventArgs mouseWheelEventArgs)
+    {
+      base.OnMouseWheel(mouseWheelEventArgs);
+      _camera.Fov -= mouseWheelEventArgs.OffsetY;
     }
 
     protected override void OnResize(ResizeEventArgs e)
@@ -332,6 +344,7 @@ namespace gcgcg
       Console.WriteLine("Tamanho interno da janela de desenho: " + ClientSize.X + "x" + ClientSize.Y);
 #endif
       GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
+      _camera.AspectRatio = ClientSize.X / (float) ClientSize.Y;
     }
 
     protected override void OnUnload()
@@ -409,6 +422,22 @@ namespace gcgcg
 
         GL.DrawElements(PrimitiveType.Triangles, _faceIndices[i].Length, DrawElementsType.UnsignedInt, 0);
       }
+    }
+
+    protected void OnUpdateFrameReloadCameraPerspective(float cameraSensivity, float actualMouseStateX, float actualMouseStateY)
+    {
+      float deltaX = (_previousMouseStateX - actualMouseStateX) * cameraSensivity / 80f;
+      float deltaY = (_previousMouseStateY - actualMouseStateY) * cameraSensivity / 80f;
+
+      _angleX += deltaX;
+      _angleY += deltaY;
+
+      Ponto4D pointX = Matematica.GerarPtosCirculo(-_angleX, 5);
+      Ponto4D pointY = Matematica.GerarPtosCirculo(-_angleY, 5);
+
+      _camera.Position = new Vector3((float) pointX.X, (float) pointY.Y, (float) pointX.Y);
+      _camera.Yaw -= deltaX;
+      _camera.Pitch += deltaY;
     }
 
     protected void OnUnloadDeleteArrays()
